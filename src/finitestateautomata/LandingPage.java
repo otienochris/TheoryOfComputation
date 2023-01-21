@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
 
 public class LandingPage extends javax.swing.JFrame {
 
@@ -135,8 +136,8 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel33 = new javax.swing.JLabel();
         txtStates = new javax.swing.JTextField();
         txtAlphabets = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        txtInitialState = new javax.swing.JTextField();
+        txtFinalStates = new javax.swing.JTextField();
         javax.swing.JLabel jLabel34 = new javax.swing.JLabel();
         txtFormalDef = new javax.swing.JTextField();
         jLabel35 = new javax.swing.JLabel();
@@ -160,6 +161,7 @@ public class LandingPage extends javax.swing.JFrame {
         btnEpsilon = new javax.swing.JButton();
         btnTransitions = new javax.swing.JButton();
         btnAlphabet = new javax.swing.JButton();
+        btnTheta = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
@@ -514,19 +516,19 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        jTextField3.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        jTextField3.setText("A");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtInitialState.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        txtInitialState.setText("A");
+        txtInitialState.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                txtInitialStateActionPerformed(evt);
             }
         });
 
-        jTextField4.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        jTextField4.setText("B");
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        txtFinalStates.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        txtFinalStates.setText("B");
+        txtFinalStates.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                txtFinalStatesActionPerformed(evt);
             }
         });
 
@@ -592,8 +594,8 @@ public class LandingPage extends javax.swing.JFrame {
                                 .addComponent(jLabel32))
                             .addGap(77, 77, 77)
                             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jTextField3)
-                                .addComponent(jTextField4)))))
+                                .addComponent(txtInitialState)
+                                .addComponent(txtFinalStates)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -622,11 +624,11 @@ public class LandingPage extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel31)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtInitialState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel32)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtFinalStates, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(33, 33, 33)
                 .addComponent(jLabel33)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -754,6 +756,17 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
+        btnTheta.setBackground(new java.awt.Color(255, 255, 255));
+        btnTheta.setForeground(new java.awt.Color(102, 0, 0));
+        btnTheta.setText("θ");
+        btnTheta.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
+        btnTheta.setFocusable(false);
+        btnTheta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThetaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -782,7 +795,9 @@ public class LandingPage extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnTransitions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnAlphabet, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnAlphabet, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnTheta, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel27)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jScrollPane4)
@@ -823,7 +838,8 @@ public class LandingPage extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnEpsilon, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnTransitions, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnAlphabet, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnAlphabet, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnTheta, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGap(58, 58, 58)
                             .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -961,13 +977,13 @@ public class LandingPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAlphabetsActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtInitialStateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtInitialStateActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtInitialStateActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void txtFinalStatesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFinalStatesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_txtFinalStatesActionPerformed
 
     private void txtFormalDefActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFormalDefActionPerformed
         // TODO add your handling code here:
@@ -1016,41 +1032,97 @@ public class LandingPage extends javax.swing.JFrame {
 
     private void btnRG_NFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRG_NFAActionPerformed
         // 1. construct an e-free regular grammar G' from G (see relevant section);
+        txtStates.setText("");
+        txtAlphabets.setText("");
+        txtInitialState.setText("");
+        txtFinalStates.setText("");
+
         String regularGrammar = inputTextArea.getText();
 
         initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
 
-        if (regularGrammar.contains(btnEpsilon.getText())) {
-            transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
-        } else {
-            transitions = createMapOfTransitions(regularGrammar);
-        }
+//        if (regularGrammar.contains(btnEpsilon.getText())) {
+//            transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
+//        } else {
+        transitions = createMapOfTransitions(regularGrammar);
+//        }
 
         setOfStatesGlobal = getStates(regularGrammar);
         setOfAlphabetsGlobal = getAlphabets(regularGrammar);
 
+        // set final states
+        setOfFinalStates.clear(); // clear first before setting
         transitions.forEach((key, values) -> {
+            logger.log(Level.INFO, "Values {0}", new String[]{values.toString()});
             values.forEach(value -> {
+                logger.log(Level.INFO, "Value {0}", new String[]{value});
                 if (setOfAlphabetsGlobal.contains(value)) {
+                    logger.log(Level.INFO, "present {0}", new Boolean[]{setOfAlphabetsGlobal.contains(value)});
                     setOfFinalStates.add(key);
                 }
             });
         });
-        
-        System.out.println("Q : " + setOfStatesGlobal.toString() );
-        System.out.println(btnAlphabet.getText() + " : " + setOfAlphabetsGlobal.toString());
-        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
-        System.out.println("q0 : " + initialState);
-        System.out.println("F : " + setOfFinalStates.toString());
-        
-        
 
-        // 2. create a FSA M, with a state for every non-terminal in G'. Set the state representing the start symbol to be the start state;
-        // 3. add another state D, which is terminal;
-        // 4. if the production S is in G' (where S is the start symbol of G', set the state representing S to be final;
-        // 5. for every production AaB in G, add a transition from state A to state B labelled with terminal a;
-        // 6. for every production Aa in G, add a transition from A to the terminal state D
+        // initialize transiton tables
+        String[] header = new String[setOfAlphabetsGlobal.size() + 1];
+        header[0] = "";
+        int[] i = {1};
+        setOfAlphabetsGlobal.forEach(alp -> {
+            header[i[0]] = alp;
+            i[0] += 1;
+        });
+
+        int size = transitions.size();
+        int[] count = {0};
+        String[][] tableData = new String[size][header.length];
+
+        transitions.forEach((key, value) -> {
+            tableData[count[0]][0] = key;
+            value.forEach(val -> {
+                for (int idx = 1; idx <= setOfAlphabetsGlobal.size(); idx++) {
+                    if (val.length() == 2 && String.valueOf(val.charAt(0)).equalsIgnoreCase(header[idx])) {
+                        tableData[count[0]][idx] = "" + val.charAt(1);
+                    } else if (val.length() == 1 && val.equalsIgnoreCase(header[idx])) {
+                        tableData[count[0]][idx] = key;
+                    }
+                    
+                    // set theta to empty
+                    if(tableData[count[0]][idx] == null || tableData[count[0]][idx].isBlank() || tableData[count[0]][idx].isEmpty()) {
+                        tableData[count[0]][idx] = btnTheta.getText();
+                    }
+                }
+            });
+            count[0] += 1;
+        });
+
+        DefaultTableModel model = new DefaultTableModel(tableData, header);
+        transitionTable.setModel(model);
+
+        // set states
+        String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtStates.setText(statesToString);
+
+        // set alphabets
+        String alphabetsToString = setOfAlphabetsGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtAlphabets.setText(alphabetsToString);
+
+        // TODO
+        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
+
+        // set initial state
+        txtInitialState.setText(initialState);
+
+        // set finalStates
+        String finalStatesToString = setOfFinalStates.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtFinalStates.setText(finalStatesToString);
+
+
     }//GEN-LAST:event_btnRG_NFAActionPerformed
+
+    private void btnThetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThetaActionPerformed
+        String theta = btnTheta.getText();
+        setClipboardContent(theta);
+    }//GEN-LAST:event_btnThetaActionPerformed
 
     // util methods
     private Map<String, List<String>> convertEpsilonRegularGrammarToEpsilonFreeRG(String regularGrammar) {
@@ -1174,6 +1246,7 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton btnEpsilon;
     private javax.swing.JButton btnImport;
     private javax.swing.JButton btnRG_NFA;
+    private javax.swing.JButton btnTheta;
     private javax.swing.JButton btnTransitions;
     private javax.swing.JLabel chowImage;
     private javax.swing.JTextArea inputTextArea;
@@ -1226,13 +1299,13 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JLabel leeImage;
     private javax.swing.JLabel limImage;
     private javax.swing.JTable transitionTable;
     private javax.swing.JTextField txtAlphabets;
+    private javax.swing.JTextField txtFinalStates;
     private javax.swing.JTextField txtFormalDef;
+    private javax.swing.JTextField txtInitialState;
     private javax.swing.JTextField txtStates;
     // End of variables declaration//GEN-END:variables
 
