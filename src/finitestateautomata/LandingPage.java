@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class LandingPage extends javax.swing.JFrame {
     private final static Logger logger = Logger.getLogger(LandingPage.class.getName());
     private Set<String> setOfStatesGlobal = new HashSet<>();
     private Set<String> setOfAlphabetsGlobal = new HashSet<>();
+    private String initialState;
 
     /**
      * Creates new form LandingPage
@@ -138,7 +141,7 @@ public class LandingPage extends javax.swing.JFrame {
         javax.swing.JLabel jLabel37 = new javax.swing.JLabel();
         jLabel38 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
-        jButton3 = new javax.swing.JButton();
+        btnRG_NFA = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
@@ -410,7 +413,7 @@ public class LandingPage extends javax.swing.JFrame {
         inputTextArea.setColumns(20);
         inputTextArea.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         inputTextArea.setRows(5);
-        inputTextArea.setText("A -> 1B | 0C\nB -> ɛ\nC -> B | 1A");
+        inputTextArea.setText("S -> aA | bB | ɛ\nA -> aA | a | ɛ\nB -> bB | b | ɛ\n");
         jScrollPane2.setViewportView(inputTextArea);
 
         btnImport.setBackground(new java.awt.Color(213, 137, 54));
@@ -628,11 +631,16 @@ public class LandingPage extends javax.swing.JFrame {
                 .addGap(100, 100, 100))
         );
 
-        jButton3.setBackground(new java.awt.Color(255, 255, 255));
-        jButton3.setForeground(new java.awt.Color(102, 0, 0));
-        jButton3.setText("NFA");
-        jButton3.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
-        jButton3.setFocusable(false);
+        btnRG_NFA.setBackground(new java.awt.Color(255, 255, 255));
+        btnRG_NFA.setForeground(new java.awt.Color(102, 0, 0));
+        btnRG_NFA.setText("NFA");
+        btnRG_NFA.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
+        btnRG_NFA.setFocusable(false);
+        btnRG_NFA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRG_NFAActionPerformed(evt);
+            }
+        });
 
         jButton4.setBackground(new java.awt.Color(255, 255, 255));
         jButton4.setForeground(new java.awt.Color(102, 0, 0));
@@ -754,7 +762,7 @@ public class LandingPage extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRG_NFA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -803,7 +811,7 @@ public class LandingPage extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnRG_NFA, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGap(61, 61, 61)
@@ -1003,7 +1011,106 @@ public class LandingPage extends javax.swing.JFrame {
         setClipboardContent(alphabet);
     }//GEN-LAST:event_btnAlphabetActionPerformed
 
+    private void btnRG_NFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRG_NFAActionPerformed
+        // 1. construct an e-free regular grammar G' from G (see relevant section);
+        String regularGrammar = inputTextArea.getText();
+        initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
+        String[] epsilonFreeGrammar;
+        if (regularGrammar.contains(btnEpsilon.getText())) {
+            convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
+        } else {
+            epsilonFreeGrammar = regularGrammar.split("\n");
+        }
+
+        // 2. create a FSA M, with a state for every non-terminal in G'. Set the state representing the start symbol to be the start state;
+        // 3. add another state D, which is terminal;
+        // 4. if the production S is in G' (where S is the start symbol of G', set the state representing S to be final;
+        // 5. for every production AaB in G, add a transition from state A to state B labelled with terminal a;
+        // 6. for every production Aa in G, add a transition from A to the terminal state D
+    }//GEN-LAST:event_btnRG_NFAActionPerformed
+
     // util methods
+    private Map<String, List<String>> convertEpsilonRegularGrammarToEpsilonFreeRG(String regularGrammar) {
+         logger.log(Level.INFO, "Converting Epsilon Regular Grammar to Epsilon Free Regular Grammar");
+        Map<String, List<String>> response = createMapOfTransitions(regularGrammar);
+        
+        // 1. extracting states that accepts epsilon
+        Set<String> statesAcceptingEpsilon = new HashSet<>();
+        logger.log(Level.INFO, "extracting states that accepts epsilon");
+        response.forEach((key, value) -> {
+            if(value.contains(btnEpsilon.getText())){
+                statesAcceptingEpsilon.add(key);
+            }
+        });
+        
+        // 2. remove all transition that accept epsilon
+        logger.log(Level.INFO, "Removing all transition that accept epsilon");
+        response.forEach((key, value) -> {
+            final String epsilon = btnEpsilon.getText();
+            if(value.contains(epsilon)){
+                value.remove(epsilon); // remove epsilon
+                response.put(key, value);
+            }
+        });
+        
+        // 3. substitute N -> e
+        boolean doesInitialStateAcceptEpsilon = statesAcceptingEpsilon.contains(initialState);
+        if (doesInitialStateAcceptEpsilon) {
+            statesAcceptingEpsilon.remove(initialState.replaceAll("\\s+", ""));
+        }
+        
+        statesAcceptingEpsilon.forEach(state -> { // A -> epsilon
+            logger.log(Level.INFO, "substitute N -> e for {0}", new String[]{state});
+            response.forEach((key,value) -> { // S -> [ aA ]
+                
+                List<String> currentValue = new ArrayList<>(value);// initialize. uses this to avoid concurrent modification exception
+               
+                value.stream(). forEach(item -> { // aA
+                    if (item.contains(state) && (item.replaceAll("\\s+", "").length() == 2)) { // check if an item in value should be subtituted
+                            logger.log(Level.INFO, "Adding: {0}. Found match at value {1}", new String[]{item, item} );
+                            currentValue.add(String.valueOf(item.charAt(0))); // substitute
+                    } 
+                }); // end of looping values                
+                response.put(key,currentValue.stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
+            });    
+        }); // all states traversed
+        
+        // change the initial state by introducing a state
+        if (doesInitialStateAcceptEpsilon) {
+            List<String> value = response.get(initialState.replaceAll("\\s+", ""));
+            value.add(btnEpsilon.getText());
+            response.put("X", value);
+        }
+
+        System.out.println(response.toString());
+
+        return response;
+    }
+
+    private Map<String, List<String>> createMapOfTransitions(String regularGrammar) {
+        Map<String, List<String>> response = new ConcurrentHashMap<>();
+        Arrays.stream(regularGrammar.split("\n"))
+                .forEach(transition -> {
+                    
+                    String[] transitionTokens = transition.split("->");
+                    
+                    // get key (state)
+                    final String key = transitionTokens[0]
+                            .replaceAll("\\s+", "");
+                    
+                    // get transition
+                    final List<String> value;
+                    value = Arrays.stream(transitionTokens[1]
+                            .replaceAll("\\s+", "")
+                            .split("\\|"))
+                            .collect(Collectors.toList());
+                    
+                    // add to map
+                    response.put(key, value);
+                });
+        return response;
+    }
+
     private Set<String> getStates(String input) {
         logger.log(Level.INFO, "Extracting a set of states");
         return Arrays.stream(input.split("\n"))
@@ -1040,12 +1147,12 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnEpsilon;
     private javax.swing.JButton btnImport;
+    private javax.swing.JButton btnRG_NFA;
     private javax.swing.JButton btnTransitions;
     private javax.swing.JLabel chowImage;
     private javax.swing.JTextArea inputTextArea;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
