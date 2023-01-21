@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class LandingPage extends javax.swing.JFrame {
     private Set<String> setOfStatesGlobal = new HashSet<>();
     private Set<String> setOfAlphabetsGlobal = new HashSet<>();
     private String initialState;
+    private Set<String> setOfFinalStates = new HashSet<>();
+    private Map<String, List<String>> transitions = new HashMap<>();
 
     /**
      * Creates new form LandingPage
@@ -1014,13 +1017,33 @@ public class LandingPage extends javax.swing.JFrame {
     private void btnRG_NFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRG_NFAActionPerformed
         // 1. construct an e-free regular grammar G' from G (see relevant section);
         String regularGrammar = inputTextArea.getText();
+
         initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
-        String[] epsilonFreeGrammar;
+
         if (regularGrammar.contains(btnEpsilon.getText())) {
-            convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
+            transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
         } else {
-            epsilonFreeGrammar = regularGrammar.split("\n");
+            transitions = createMapOfTransitions(regularGrammar);
         }
+
+        setOfStatesGlobal = getStates(regularGrammar);
+        setOfAlphabetsGlobal = getAlphabets(regularGrammar);
+
+        transitions.forEach((key, values) -> {
+            values.forEach(value -> {
+                if (setOfAlphabetsGlobal.contains(value)) {
+                    setOfFinalStates.add(key);
+                }
+            });
+        });
+        
+        System.out.println("Q : " + setOfStatesGlobal.toString() );
+        System.out.println(btnAlphabet.getText() + " : " + setOfAlphabetsGlobal.toString());
+        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
+        System.out.println("q0 : " + initialState);
+        System.out.println("F : " + setOfFinalStates.toString());
+        
+        
 
         // 2. create a FSA M, with a state for every non-terminal in G'. Set the state representing the start symbol to be the start state;
         // 3. add another state D, which is terminal;
@@ -1031,57 +1054,60 @@ public class LandingPage extends javax.swing.JFrame {
 
     // util methods
     private Map<String, List<String>> convertEpsilonRegularGrammarToEpsilonFreeRG(String regularGrammar) {
-         logger.log(Level.INFO, "Converting Epsilon Regular Grammar to Epsilon Free Regular Grammar");
+        logger.log(Level.INFO, "Converting Epsilon Regular Grammar to Epsilon Free Regular Grammar");
         Map<String, List<String>> response = createMapOfTransitions(regularGrammar);
-        
+
         // 1. extracting states that accepts epsilon
         Set<String> statesAcceptingEpsilon = new HashSet<>();
         logger.log(Level.INFO, "extracting states that accepts epsilon");
         response.forEach((key, value) -> {
-            if(value.contains(btnEpsilon.getText())){
+            if (value.contains(btnEpsilon.getText())) {
                 statesAcceptingEpsilon.add(key);
             }
         });
-        
+
         // 2. remove all transition that accept epsilon
         logger.log(Level.INFO, "Removing all transition that accept epsilon");
         response.forEach((key, value) -> {
             final String epsilon = btnEpsilon.getText();
-            if(value.contains(epsilon)){
+            if (value.contains(epsilon)) {
                 value.remove(epsilon); // remove epsilon
                 response.put(key, value);
             }
         });
-        
+
         // 3. substitute N -> e
         boolean doesInitialStateAcceptEpsilon = statesAcceptingEpsilon.contains(initialState);
         if (doesInitialStateAcceptEpsilon) {
             statesAcceptingEpsilon.remove(initialState.replaceAll("\\s+", ""));
         }
-        
+
         statesAcceptingEpsilon.forEach(state -> { // A -> epsilon
             logger.log(Level.INFO, "substitute N -> e for {0}", new String[]{state});
-            response.forEach((key,value) -> { // S -> [ aA ]
-                
+            response.forEach((key, value) -> { // S -> [ aA ]
+
                 List<String> currentValue = new ArrayList<>(value);// initialize. uses this to avoid concurrent modification exception
-               
-                value.stream(). forEach(item -> { // aA
+
+                value.stream().forEach(item -> { // aA
                     if (item.contains(state) && (item.replaceAll("\\s+", "").length() == 2)) { // check if an item in value should be subtituted
-                            logger.log(Level.INFO, "Adding: {0}. Found match at value {1}", new String[]{item, item} );
-                            currentValue.add(String.valueOf(item.charAt(0))); // substitute
-                    } 
+                        logger.log(Level.INFO, "Adding: {0}. Found match at value {1}", new String[]{item, item});
+                        currentValue.add(String.valueOf(item.charAt(0))); // substitute
+                    }
                 }); // end of looping values                
-                response.put(key,currentValue.stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
-            });    
+                response.put(key, currentValue.stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
+            });
         }); // all states traversed
-        
+
         // change the initial state by introducing a state
         if (doesInitialStateAcceptEpsilon) {
-            List<String> value = response.get(initialState.replaceAll("\\s+", ""));
+            List<String> value = response.get(initialState.replaceAll("\\s+", "")).stream()
+                    .collect(Collectors.toList()); // this makes sure you do not get reference but the values
             value.add(btnEpsilon.getText());
             response.put("X", value);
+            initialState = "X";
         }
 
+        transitions = response;
         System.out.println(response.toString());
 
         return response;
@@ -1091,20 +1117,20 @@ public class LandingPage extends javax.swing.JFrame {
         Map<String, List<String>> response = new ConcurrentHashMap<>();
         Arrays.stream(regularGrammar.split("\n"))
                 .forEach(transition -> {
-                    
+
                     String[] transitionTokens = transition.split("->");
-                    
+
                     // get key (state)
                     final String key = transitionTokens[0]
                             .replaceAll("\\s+", "");
-                    
+
                     // get transition
                     final List<String> value;
                     value = Arrays.stream(transitionTokens[1]
                             .replaceAll("\\s+", "")
                             .split("\\|"))
                             .collect(Collectors.toList());
-                    
+
                     // add to map
                     response.put(key, value);
                 });
