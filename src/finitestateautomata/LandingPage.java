@@ -147,7 +147,7 @@ public class LandingPage extends javax.swing.JFrame {
         jSeparator4 = new javax.swing.JSeparator();
         btnRG_NFA = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnNFA_to_DFA = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -471,7 +471,7 @@ public class LandingPage extends javax.swing.JFrame {
         jPanel6.setBackground(new java.awt.Color(0, 51, 51));
         jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        transitionTable.setBackground(new java.awt.Color(153, 153, 153));
+        transitionTable.setBackground(new java.awt.Color(255, 255, 255));
         transitionTable.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         transitionTable.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         transitionTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -503,6 +503,7 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel32.setText("Final States (F)");
 
         jLabel33.setFont(new java.awt.Font("Ubuntu Mono", 3, 15)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
         jLabel33.setText("Transition Table:");
 
         txtStates.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
@@ -658,14 +659,14 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        jButton5.setBackground(new java.awt.Color(255, 255, 255));
-        jButton5.setForeground(new java.awt.Color(102, 0, 0));
-        jButton5.setText("DFA");
-        jButton5.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
-        jButton5.setFocusable(false);
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        btnNFA_to_DFA.setBackground(new java.awt.Color(255, 255, 255));
+        btnNFA_to_DFA.setForeground(new java.awt.Color(102, 0, 0));
+        btnNFA_to_DFA.setText("DFA");
+        btnNFA_to_DFA.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
+        btnNFA_to_DFA.setFocusable(false);
+        btnNFA_to_DFA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                btnNFA_to_DFAActionPerformed(evt);
             }
         });
 
@@ -779,7 +780,7 @@ public class LandingPage extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnRG_NFA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnNFA_to_DFA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -831,7 +832,7 @@ public class LandingPage extends javax.swing.JFrame {
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(btnRG_NFA, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(btnNFA_to_DFA, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGap(61, 61, 61)
                             .addComponent(jLabel40)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -993,9 +994,9 @@ public class LandingPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void btnNFA_to_DFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNFA_to_DFAActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
@@ -1041,11 +1042,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
 
-//        if (regularGrammar.contains(btnEpsilon.getText())) {
-//            transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
-//        } else {
         transitions = createMapOfTransitions(regularGrammar);
-//        }
 
         setOfStatesGlobal = getStates(regularGrammar);
         setOfAlphabetsGlobal = getAlphabets(regularGrammar);
@@ -1063,37 +1060,9 @@ public class LandingPage extends javax.swing.JFrame {
             });
         });
 
-        // initialize transiton tables
-        String[] header = new String[setOfAlphabetsGlobal.size() + 1];
-        header[0] = "";
-        int[] i = {1};
-        setOfAlphabetsGlobal.forEach(alp -> {
-            header[i[0]] = alp;
-            i[0] += 1;
-        });
-
-        int size = transitions.size();
-        int[] count = {0};
-        String[][] tableData = new String[size][header.length];
-
-        transitions.forEach((key, value) -> {
-            tableData[count[0]][0] = key;
-            value.forEach(val -> {
-                for (int idx = 1; idx <= setOfAlphabetsGlobal.size(); idx++) {
-                    if (val.length() == 2 && String.valueOf(val.charAt(0)).equalsIgnoreCase(header[idx])) {
-                        tableData[count[0]][idx] = "" + val.charAt(1);
-                    } else if (val.length() == 1 && val.equalsIgnoreCase(header[idx])) {
-                        tableData[count[0]][idx] = key;
-                    }
-                    
-                    // set theta to empty
-                    if(tableData[count[0]][idx] == null || tableData[count[0]][idx].isBlank() || tableData[count[0]][idx].isEmpty()) {
-                        tableData[count[0]][idx] = btnTheta.getText();
-                    }
-                }
-            });
-            count[0] += 1;
-        });
+        String[] header = getTransitionTableHeader();
+        String[][] tableData = getTransitionTableData(header, transitions);
+        addThetaToEmptyTransitionsInNFA(tableData);
 
         DefaultTableModel model = new DefaultTableModel(tableData, header);
         transitionTable.setModel(model);
@@ -1118,6 +1087,55 @@ public class LandingPage extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnRG_NFAActionPerformed
+
+    private String[][] getTransitionTableData(String[] header, Map<String, List<String>> stateTransitions) {
+        int size = stateTransitions.size();
+        int[] count = {0};
+        String[][] tableData = new String[size][header.length];
+        stateTransitions.forEach((key, value) -> {
+            tableData[count[0]][0] = key;
+            value.forEach(val -> {
+                for (int idx = 1; idx < header.length; idx++) {
+                    if (val.length() == 2 && String.valueOf(val.charAt(0)).equalsIgnoreCase(header[idx])) {
+                        if (tableData[count[0]][idx] != null && !tableData[count[0]][idx].isBlank() && !tableData[count[0]][idx].isEmpty()) {
+                            tableData[count[0]][idx] += "," + val.charAt(1);
+                        } else {
+                            tableData[count[0]][idx] = "" + val.charAt(1);
+                        }
+                    } else if (val.length() == 1 && val.equalsIgnoreCase(header[idx])) {
+                        if (tableData[count[0]][idx] != null && !tableData[count[0]][idx].isBlank() && !tableData[count[0]][idx].isEmpty() && !tableData[count[0]][idx].equalsIgnoreCase(key)) {
+                            tableData[count[0]][idx] += "," + key;
+                        } else {
+                            tableData[count[0]][idx] = key;
+                        }
+                    }
+                }
+            });
+            count[0] += 1;
+        });
+        return tableData;
+    }
+
+    private String[] getTransitionTableHeader() {
+        // initialize transiton tables
+        String[] header = new String[setOfAlphabetsGlobal.size() + 1];
+        header[0] = "State \\ Alphabet";
+        int[] i = {1};
+        setOfAlphabetsGlobal.forEach(alp -> {
+            header[i[0]] = alp;
+            i[0] += 1;
+        });
+        return header;
+    }
+
+    private void addThetaToEmptyTransitionsInNFA(String[][] tableData) {
+        for(int x =0; x < tableData.length ; x++) {
+            for(int y =0; y < tableData[x].length; y ++) {
+                if(tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank())
+                    tableData[x][y] = btnTheta.getText();
+            }
+        }
+    }
 
     private void btnThetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThetaActionPerformed
         String theta = btnTheta.getText();
@@ -1186,6 +1204,7 @@ public class LandingPage extends javax.swing.JFrame {
     }
 
     private Map<String, List<String>> createMapOfTransitions(String regularGrammar) {
+        logger.log(Level.INFO, "Converting transition to a map");
         Map<String, List<String>> response = new ConcurrentHashMap<>();
         Arrays.stream(regularGrammar.split("\n"))
                 .forEach(transition -> {
@@ -1245,6 +1264,7 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnEpsilon;
     private javax.swing.JButton btnImport;
+    private javax.swing.JButton btnNFA_to_DFA;
     private javax.swing.JButton btnRG_NFA;
     private javax.swing.JButton btnTheta;
     private javax.swing.JButton btnTransitions;
@@ -1253,7 +1273,6 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
