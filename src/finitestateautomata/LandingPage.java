@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +35,8 @@ public class LandingPage extends javax.swing.JFrame {
     private String initialState;
     private Set<String> setOfFinalStates = new HashSet<>();
     private Map<String, List<String>> transitions = new HashMap<>();
-    private static final String DEFAULT_DEAD_STATE = "C";
+    private static final String DEFAULT_DEAD_STATE = "Z";
+    private boolean nfaHasMultipleOptions = false;
 
     /**
      * Creates new form LandingPage
@@ -997,13 +999,12 @@ public class LandingPage extends javax.swing.JFrame {
 
     private void btnNFA_to_DFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNFA_to_DFAActionPerformed
 
-
         String regularGrammar = inputTextArea.getText();
         transitions = createMapOfTransitions(regularGrammar);
 
         // initial state
         initialState = txtInitialState.getText();
-        
+
         // set of states
         setOfStatesGlobal = Arrays.stream(txtStates.getText()
                 .replaceAll("\\s+", "") // remove white spaces
@@ -1019,7 +1020,7 @@ public class LandingPage extends javax.swing.JFrame {
                 .replaceAll("\\}", "") // remove closisng braces
                 .split(",")) // get the states as an array
                 .collect(Collectors.toSet()); // convert to set
-        
+
         // set of alphabets
         setOfAlphabetsGlobal = Arrays.stream(txtAlphabets.getText()
                 .replaceAll("\\s+", "") // remove white spaces
@@ -1030,40 +1031,180 @@ public class LandingPage extends javax.swing.JFrame {
 
         String[] header = getTransitionTableHeader();
         String[][] tableData = getTransitionTableData(header, transitions);
-        
-        tableData = addDeadState(tableData);
-        
-        setDataToTransitionTable(tableData, header);
+        String[][] newTableData = null;
+
+//        tableData = addDeadState(tableData);
+        if (nfaHasMultipleOptions) {
+
+            // create stack of states to traverse
+            Stack<String> pendingStates = new Stack<>();
+            List<String> statesHandled = new ArrayList<>();
+
+            newTableData = new String[1][tableData[0].length]; // insert one transition record at a time
+
+            for (int x = 0; x < header.length; x++) {
+                String data = tableData[0][x];
+                if (data != null && data.contains(",")) {
+                    //create new state and store in stack
+                    data = data.replaceAll(",", "");
+                }
+                if (data != null && !pendingStates.contains(data) && !data.equalsIgnoreCase(initialState)) {
+                    pendingStates.push(data);
+                }
+                newTableData[0][x] = data;
+            }
+            // we have handled the initial state
+            statesHandled.add(initialState);
+
+            // handle next state
+            while (!pendingStates.empty()) {
+                String currentStateBeingProcessed = pendingStates.pop();
+                if (setOfStatesGlobal.contains(currentStateBeingProcessed)) {
+                    System.out.println("Handling existing state");
+                    for (int x = 0; x < tableData.length; x++) {
+                        if (tableData[x][0].equals(currentStateBeingProcessed)) {
+
+                            for (String item : tableData[x]) {
+                                if (item == null) {
+                                    pendingStates.push(DEFAULT_DEAD_STATE);
+                                }
+                            }
+                            String[] newRecord = Arrays.stream(tableData[x])
+                                    .map(item -> item == null ? DEFAULT_DEAD_STATE : item.contains(",") ? item.replaceAll(",", "") : item)
+                                    .toArray(String[]::new);
+
+                            // if a new state is introduced add it to the stack
+                            Arrays.stream(newRecord).forEach(item -> {
+                                if (!setOfStatesGlobal.contains(item)) {
+                                    if (!pendingStates.contains(item) && !statesHandled.contains(item)) {
+                                        pendingStates.push(item);
+                                    }
+                                }
+                            });
+
+                            newTableData = insertNewRowToNewTableData(newTableData, newRecord);
+                        }
+                    }
+                    statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done               
+                } else {
+                    System.out.println("Handling new state");
+                    // trace the members of the new state and get the 
+                    String[] newRecord = new String[header.length];
+                    newRecord[0] = currentStateBeingProcessed;
+                    System.out.println("Current state: " + currentStateBeingProcessed);
+
+                    if (currentStateBeingProcessed != null && currentStateBeingProcessed.equalsIgnoreCase(DEFAULT_DEAD_STATE)) {
+
+                        for (int columnIndex = 1; columnIndex < header.length; columnIndex++) {
+
+                            newRecord[columnIndex] = DEFAULT_DEAD_STATE; // write the new state
+
+                            statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done
+                        }
+                    } else {
+                        for (int columnIndex = 1; columnIndex < header.length; columnIndex++) {
+                            String[] constituentMembers;
+
+                            if (currentStateBeingProcessed != null && currentStateBeingProcessed.length() == 2) {
+                                constituentMembers = currentStateBeingProcessed.split("");
+                            } else {
+                                constituentMembers = new String[]{currentStateBeingProcessed};
+                            }
+
+                            System.out.println("Members: " + Arrays.toString(constituentMembers));
+
+                            Set<String> unionOfMembers = new HashSet<>();
+
+                            for (String[] record : tableData) { // for each record
+                                for (String member : constituentMembers) { // for each constituent member
+                                    if (record[0].equalsIgnoreCase(member)) {
+                                        String states = record[columnIndex];
+
+                                        if (states != null && states.contains(",")) { // if state like A,B
+                                            Arrays.stream(states.split(",")).forEach(unionOfMembers::add);
+                                            System.out.println("Union of members" + unionOfMembers.toString());
+                                        } else { // if like A
+                                            unionOfMembers.add(states);
+                                        }
+                                    }
+                                }
+                            }
+
+                            StringBuilder currentlyUpdatedTransitionState = new StringBuilder();
+                            unionOfMembers.forEach(currentlyUpdatedTransitionState::append);
+
+                            final String currentlyUpdatedTransitionStateToString = currentlyUpdatedTransitionState.toString();
+                            System.out.println("Adding state: " + currentlyUpdatedTransitionStateToString);
+
+                            newRecord[columnIndex] = currentlyUpdatedTransitionState.toString(); // write the new state
+
+                            if (!pendingStates.contains(currentlyUpdatedTransitionStateToString) && !statesHandled.contains(currentlyUpdatedTransitionStateToString)) {
+                                pendingStates.push(currentlyUpdatedTransitionState.toString()); // add the new state to the pending states
+                            }
+                            statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done
+                        }
+                    }
+
+                    newTableData = insertNewRowToNewTableData(newTableData, newRecord); //write to the newTableData
+                }
+            }
+
+            for (String[] record : newTableData) {
+                System.out.println("new rec: " + Arrays.toString(record));
+            }
+            System.out.println("Pending: " + pendingStates.toString());
+            System.out.println("Handled: " + statesHandled.toString());
+
+        }
+
+//        setDataToTransitionTable(tableData, header);
+        newTableData = cleanTableData(newTableData);
+        setDataToTransitionTable(newTableData, header);
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
+
+    private String[][] insertNewRowToNewTableData(String[][] newTableData, String[] newRecord) {
+        System.out.println("Adding record to new table data");
+        String[][] newTableDataResponse = new String[newTableData.length + 1][newTableData[0].length];
+
+        // copy the old data
+        for (int rowIdx = 0; rowIdx < newTableData.length; rowIdx++) {
+            for (int colIdx = 0; colIdx < newTableData[0].length; colIdx++) {
+                newTableDataResponse[rowIdx][colIdx] = newTableData[rowIdx][colIdx];
+            }
+        }
+
+        newTableDataResponse[newTableDataResponse.length - 1] = newRecord;
+        System.out.println("Size incread from " + newTableData.length + " to " + newTableDataResponse.length);
+        return newTableDataResponse;
+    }
 
     private String[][] addDeadState(String[][] tableData) {
         // check if there are empty transitions and introduce a dead state
         String[][] newTableData = new String[tableData.length + 1][tableData[0].length];
-        
-        for (int x =0; x < tableData.length; x++){
-            for (int y =0; y < tableData[0].length; y++){
-                if(tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank()){
+
+        for (int x = 0; x < tableData.length; x++) {
+            for (int y = 0; y < tableData[0].length; y++) {
+                if (tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank()) {
                     tableData[x][y] = DEFAULT_DEAD_STATE;
-                }        
+                }
             }
         }
-        
+
         // copy data
-        for (int x =0; x < tableData.length; x++){
-            for (int y =0; y < tableData[0].length; y++){
-                
+        for (int x = 0; x < tableData.length; x++) {
+            for (int y = 0; y < tableData[0].length; y++) {
+
                 newTableData[x][y] = tableData[x][y];
             }
         }
-        
+
         // set tranisitions for the dead state
-        for(int x = 0; x < newTableData[0].length; x++){
-            newTableData[newTableData.length -1][x] = DEFAULT_DEAD_STATE;
+        for (int x = 0; x < newTableData[0].length; x++) {
+            newTableData[newTableData.length - 1][x] = DEFAULT_DEAD_STATE;
         }
-        
+
         return newTableData;
     }
-
 
     private void setDataToTransitionTable(String[][] tableData, String[] header) {
         DefaultTableModel model = new DefaultTableModel(tableData, header);
@@ -1169,12 +1310,14 @@ public class LandingPage extends javax.swing.JFrame {
                 for (int idx = 1; idx < header.length; idx++) {
                     if (val.length() == 2 && String.valueOf(val.charAt(0)).equalsIgnoreCase(header[idx])) {
                         if (tableData[count[0]][idx] != null && !tableData[count[0]][idx].isBlank() && !tableData[count[0]][idx].isEmpty()) {
+                            nfaHasMultipleOptions = true;
                             tableData[count[0]][idx] += "," + val.charAt(1);
                         } else {
                             tableData[count[0]][idx] = "" + val.charAt(1);
                         }
                     } else if (val.length() == 1 && val.equalsIgnoreCase(header[idx])) {
                         if (tableData[count[0]][idx] != null && !tableData[count[0]][idx].isBlank() && !tableData[count[0]][idx].isEmpty() && !tableData[count[0]][idx].equalsIgnoreCase(key)) {
+                            nfaHasMultipleOptions = true;
                             tableData[count[0]][idx] += "," + key;
                         } else {
                             tableData[count[0]][idx] = key;
@@ -1200,10 +1343,11 @@ public class LandingPage extends javax.swing.JFrame {
     }
 
     private void addThetaToEmptyTransitionsInNFA(String[][] tableData) {
-        for(int x =0; x < tableData.length ; x++) {
-            for(int y =0; y < tableData[x].length; y ++) {
-                if(tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank())
+        for (int x = 0; x < tableData.length; x++) {
+            for (int y = 0; y < tableData[x].length; y++) {
+                if (tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank()) {
                     tableData[x][y] = btnTheta.getText();
+                }
             }
         }
     }
@@ -1398,5 +1542,18 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JTextField txtInitialState;
     private javax.swing.JTextField txtStates;
     // End of variables declaration//GEN-END:variables
+
+    private String[][] cleanTableData(String[][] newTableData) {
+        String[][] cleanData = new String[newTableData.length][newTableData[0].length];
+        for (int rowId = 0; rowId < newTableData.length; rowId++) {
+            for (int colId = 0; colId < newTableData[rowId].length; colId++) {
+                newTableData[rowId][colId] = newTableData[rowId][colId].replaceAll("null", "");
+                if (newTableData[rowId][0] != null && !newTableData[rowId][0].contains("null") && !newTableData[rowId][0].isBlank() && !newTableData[rowId][0].isEmpty()) {
+                    cleanData[rowId][colId] = newTableData[rowId][colId];
+                }
+            }
+        }
+        return cleanData;
+    }
 
 }
