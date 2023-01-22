@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package finitestateautomata;
 
 import java.awt.HeadlessException;
@@ -37,6 +33,7 @@ public class LandingPage extends javax.swing.JFrame {
     private Map<String, List<String>> transitions = new HashMap<>();
     private static final String DEFAULT_DEAD_STATE = "Z";
     private boolean nfaHasMultipleOptions = false;
+    private ConversionEnum coversionDone;
 
     /**
      * Creates new form LandingPage
@@ -79,6 +76,10 @@ public class LandingPage extends javax.swing.JFrame {
             ImageIcon leeIcon = new ImageIcon(lee);
             leeImage.setIcon(leeIcon);
 
+            BufferedImage yap = ImageIO.read(new File("yap.jpeg"));
+            ImageIcon yapIcon = new ImageIcon(yap);
+            yapImage.setIcon(yapIcon);
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -99,8 +100,6 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
         javax.swing.JLabel jLabel5 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
@@ -122,6 +121,13 @@ public class LandingPage extends javax.swing.JFrame {
         chowImage = new javax.swing.JLabel();
         leeImage = new javax.swing.JLabel();
         limImage = new javax.swing.JLabel();
+        yapImage = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel41 = new javax.swing.JLabel();
+        jLabel42 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel43 = new javax.swing.JLabel();
+        jLabel44 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel45 = new javax.swing.JLabel();
+        jLabel46 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -200,10 +206,6 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel4.setText("Group information:");
 
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
-        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
         jLabel5.setFont(new java.awt.Font("Monospaced", 2, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Name:");
@@ -250,7 +252,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         jLabel16.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("60%");
+        jLabel16.setText("40%");
 
         jLabel17.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
@@ -288,6 +290,34 @@ public class LandingPage extends javax.swing.JFrame {
         limImage.setMinimumSize(new java.awt.Dimension(165, 165));
         limImage.setPreferredSize(new java.awt.Dimension(165, 165));
 
+        yapImage.setMaximumSize(new java.awt.Dimension(165, 165));
+        yapImage.setMinimumSize(new java.awt.Dimension(165, 165));
+        yapImage.setPreferredSize(new java.awt.Dimension(165, 165));
+
+        jLabel41.setFont(new java.awt.Font("Monospaced", 2, 14)); // NOI18N
+        jLabel41.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel41.setText("Name:");
+
+        jLabel42.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
+        jLabel42.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel42.setText("Yap Han Yang");
+
+        jLabel43.setFont(new java.awt.Font("Monospaced", 2, 14)); // NOI18N
+        jLabel43.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel43.setText("Id:");
+
+        jLabel44.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
+        jLabel44.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel44.setText("1181102575");
+
+        jLabel45.setFont(new java.awt.Font("Monospaced", 2, 14)); // NOI18N
+        jLabel45.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel45.setText("Participation:");
+
+        jLabel46.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
+        jLabel46.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel46.setText("20%");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -300,48 +330,53 @@ public class LandingPage extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 938, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(614, 614, 614))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(222, 222, 222)
+                .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addGap(366, 366, 366))
                             .addComponent(chowImage, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7)
                             .addComponent(jLabel8)
                             .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel16)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16)
                             .addComponent(jLabel11)
                             .addComponent(jLabel13)
                             .addComponent(jLabel15)
                             .addComponent(jLabel12)
                             .addComponent(jLabel14)
                             .addComponent(limImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(86, 86, 86)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel18)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel22)
+                            .addComponent(leeImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18)
-                    .addComponent(jLabel20)
-                    .addComponent(jLabel19)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel21)
-                    .addComponent(jLabel22)
-                    .addComponent(leeImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(251, 251, 251))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel41)
+                            .addComponent(jLabel43)
+                            .addComponent(jLabel45)
+                            .addComponent(jLabel42)
+                            .addComponent(jLabel44)
+                            .addComponent(jLabel46)
+                            .addComponent(yapImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(127, 127, 127))))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {chowImage, leeImage, limImage});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {chowImage, leeImage, limImage, yapImage});
 
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,15 +387,18 @@ public class LandingPage extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
-                .addGap(75, 75, 75)
+                .addGap(52, 52, 52)
                 .addComponent(jLabel4)
-                .addGap(18, 18, 18)
+                .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(limImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(yapImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(leeImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(51, 51, 51)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(leeImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(51, 51, 51)
                                 .addComponent(jLabel18)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel17)
@@ -372,44 +410,50 @@ public class LandingPage extends javax.swing.JFrame {
                                 .addComponent(jLabel19)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel22))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(chowImage, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel11)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel12)
-                                        .addGap(26, 26, 26)
-                                        .addComponent(jLabel13)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel14)
-                                        .addGap(22, 22, 22)
-                                        .addComponent(jLabel15)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel16))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel8)
-                                        .addGap(26, 26, 26)
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel9)
-                                        .addGap(22, 22, 22)
-                                        .addComponent(jLabel7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel10)))))
-                        .addGap(46, 46, 46))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel41)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel42)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel43)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel44)
+                                .addGap(22, 22, 22)
+                                .addComponent(jLabel45)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel46))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(chowImage, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(51, 51, 51)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 565, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(limImage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 565, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel8)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel9)
+                                .addGap(22, 22, 22)
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel10))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel12)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel14)
+                                .addGap(22, 22, 22)
+                                .addComponent(jLabel15)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel16)))))
+                .addGap(0, 189, Short.MAX_VALUE))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {chowImage, leeImage, limImage});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {chowImage, leeImage, limImage, yapImage});
 
         jTabbedPane1.addTab("Home", jPanel1);
 
@@ -721,7 +765,8 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel28.setText("Actions");
 
         jLabel39.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel39.setText("Error Message");
+        jLabel39.setText("Error Message gose here");
+        jLabel39.setEnabled(false);
 
         jLabel40.setFont(new java.awt.Font("Monospaced", 3, 14)); // NOI18N
         jLabel40.setForeground(new java.awt.Color(0, 0, 0));
@@ -855,7 +900,7 @@ public class LandingPage extends javax.swing.JFrame {
                             .addGap(18, 18, 18)
                             .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 802, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(188, Short.MAX_VALUE))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnAlphabet, btnEpsilon, btnTransitions});
@@ -956,7 +1001,7 @@ public class LandingPage extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(57, 57, 57)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(85, Short.MAX_VALUE))
+                .addContainerGap(222, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Help", jPanel3);
@@ -1034,7 +1079,13 @@ public class LandingPage extends javax.swing.JFrame {
         String[][] newTableData = null;
 
 //        tableData = addDeadState(tableData);
-        if (nfaHasMultipleOptions) {
+        if (!nfaHasMultipleOptions){
+            tableData = addDeadState(tableData);
+            setDataToTransitionTable(tableData, header); // set data to table
+            
+            updateAllStatesAndFinalStates(tableData);
+            
+        } else {
 
             // create stack of states to traverse
             Stack<String> pendingStates = new Stack<>();
@@ -1149,24 +1200,54 @@ public class LandingPage extends javax.swing.JFrame {
                 }
             }
 
+            newTableData = cleanTableData(newTableData);
+
             for (String[] record : newTableData) {
                 System.out.println("new rec: " + Arrays.toString(record));
             }
             System.out.println("Pending: " + pendingStates.toString());
             System.out.println("Handled: " + statesHandled.toString());
-
+            setDataToTransitionTable(newTableData, header); // set data to table
+            updateAllStatesAndFinalStates(newTableData); 
         }
 
-//        setDataToTransitionTable(tableData, header);
-        newTableData = cleanTableData(newTableData);
-        setDataToTransitionTable(newTableData, header);
+
+        
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
+
+    private void updateAllStatesAndFinalStates(String[][] newTableData) {
+        // set final states
+        Set<String> allStates = new HashSet<>(); // states after conversion
+        for(String [] record: newTableData) {
+            if(!allStates.contains(record[0]) && record[0] != null){
+                allStates.add(record[0]);
+            }
+        }
+        txtStates.setText(allStates.toString()
+                .replaceAll("\\[", "{") // remove opening braces
+                .replaceAll("\\]", "}")); // remove closisng braces);
+        
+        // final states
+        Set<String> currentFinalStates = new HashSet<>();
+        allStates.forEach(state -> {
+            setOfFinalStates.forEach(finalState -> {
+                if(state.contains(finalState)) {
+                    if(!currentFinalStates.contains(state)){
+                        currentFinalStates.add(state);
+                    }
+                }
+            });
+        });
+        txtFinalStates.setText(currentFinalStates.toString()
+                .replaceAll("\\[", "{") // remove opening braces
+                .replaceAll("\\]", "}")); // remove closisng braces);
+    }
 
     private String[][] insertNewRowToNewTableData(String[][] newTableData, String[] newRecord) {
         System.out.println("Adding record to new table data");
         String[][] newTableDataResponse = new String[newTableData.length + 1][newTableData[0].length];
 
-        // copy the old data
+        // copy the old columnData
         for (int rowIdx = 0; rowIdx < newTableData.length; rowIdx++) {
             for (int colIdx = 0; colIdx < newTableData[0].length; colIdx++) {
                 newTableDataResponse[rowIdx][colIdx] = newTableData[rowIdx][colIdx];
@@ -1190,7 +1271,7 @@ public class LandingPage extends javax.swing.JFrame {
             }
         }
 
-        // copy data
+        // copy columnData
         for (int x = 0; x < tableData.length; x++) {
             for (int y = 0; y < tableData[0].length; y++) {
 
@@ -1514,6 +1595,9 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
+    private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel46;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -1526,8 +1610,6 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -1541,6 +1623,7 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JTextField txtFormalDef;
     private javax.swing.JTextField txtInitialState;
     private javax.swing.JTextField txtStates;
+    private javax.swing.JLabel yapImage;
     // End of variables declaration//GEN-END:variables
 
     private String[][] cleanTableData(String[][] newTableData) {
