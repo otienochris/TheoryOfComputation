@@ -33,7 +33,17 @@ public class LandingPage extends javax.swing.JFrame {
     private Map<String, List<String>> transitions = new HashMap<>();
     private static final String DEFAULT_DEAD_STATE = "Z";
     private boolean nfaHasMultipleOptions = false;
-    private ConversionEnum coversionDone;
+    private ConversionEnum conversionDone;
+    private String[][] globalTableData;
+    private String[] globalTableHeader;
+
+    public static void main(String[] args) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new LandingPage().setVisible(true);
+            }
+        });
+    }
 
     /**
      * Creates new form LandingPage
@@ -160,7 +170,7 @@ public class LandingPage extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        txtInputString = new javax.swing.JTextArea();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel27 = new javax.swing.JLabel();
         jButton8 = new javax.swing.JButton();
@@ -739,10 +749,10 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jTextArea2.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 51, 51)));
-        jScrollPane4.setViewportView(jTextArea2);
+        txtInputString.setColumns(20);
+        txtInputString.setRows(5);
+        txtInputString.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 51, 51)));
+        jScrollPane4.setViewportView(txtInputString);
 
         jLabel27.setFont(new java.awt.Font("Monospaced", 3, 18)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(0, 0, 0));
@@ -1079,12 +1089,15 @@ public class LandingPage extends javax.swing.JFrame {
         String[][] newTableData = null;
 
 //        tableData = addDeadState(tableData);
-        if (!nfaHasMultipleOptions){
+        if (!nfaHasMultipleOptions) {
             tableData = addDeadState(tableData);
             setDataToTransitionTable(tableData, header); // set data to table
-            
+
             updateAllStatesAndFinalStates(tableData);
-            
+            globalTableData = tableData;
+            globalTableHeader = header;
+            conversionDone = ConversionEnum.DFA;
+
         } else {
 
             // create stack of states to traverse
@@ -1208,31 +1221,33 @@ public class LandingPage extends javax.swing.JFrame {
             System.out.println("Pending: " + pendingStates.toString());
             System.out.println("Handled: " + statesHandled.toString());
             setDataToTransitionTable(newTableData, header); // set data to table
-            updateAllStatesAndFinalStates(newTableData); 
+            updateAllStatesAndFinalStates(newTableData);
+            globalTableData = newTableData;
+            globalTableHeader = header;
+            conversionDone = ConversionEnum.DFA;
         }
 
 
-        
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
 
     private void updateAllStatesAndFinalStates(String[][] newTableData) {
         // set final states
         Set<String> allStates = new HashSet<>(); // states after conversion
-        for(String [] record: newTableData) {
-            if(!allStates.contains(record[0]) && record[0] != null){
+        for (String[] record : newTableData) {
+            if (!allStates.contains(record[0]) && record[0] != null) {
                 allStates.add(record[0]);
             }
         }
         txtStates.setText(allStates.toString()
                 .replaceAll("\\[", "{") // remove opening braces
                 .replaceAll("\\]", "}")); // remove closisng braces);
-        
+
         // final states
         Set<String> currentFinalStates = new HashSet<>();
         allStates.forEach(state -> {
             setOfFinalStates.forEach(finalState -> {
-                if(state.contains(finalState)) {
-                    if(!currentFinalStates.contains(state)){
+                if (state.contains(finalState)) {
+                    if (!currentFinalStates.contains(state)) {
                         currentFinalStates.add(state);
                     }
                 }
@@ -1301,8 +1316,80 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+        String[] entries = txtInputString.getText().split("\n");
+
+        Map<String, List<String>> transitionFromTableData = convertTableDataToTranstionMap(globalTableData, globalTableHeader);
+        Map<Integer, Boolean> outcome = new HashMap<>();
+
+        if (conversionDone == ConversionEnum.NFA) {
+            for (int i = 0; i < entries.length; i++) {
+                final String[] alphabetsToCheck = entries[i]
+                        .replaceAll("\\s+", "") // remove spaces
+                        .split("");
+
+                // check if alphates are valid
+                Boolean allMatch = Arrays.stream(alphabetsToCheck).collect(Collectors.toSet()).stream().allMatch(setOfAlphabetsGlobal::contains);
+                if (allMatch) {
+                    boolean accepted = true;
+                    final String[] currentState = new String[]{txtInitialState.getText()};
+
+                    for (int j = 0; j < alphabetsToCheck.length; j++) { // loop each alphabet like 1,0,0,1
+
+                        final String currentAlphabet = alphabetsToCheck[j];
+                        final Boolean[] transitionFound = new Boolean[]{false};
+                        transitionFromTableData.get(currentState[0]).forEach(item -> {
+                            // move from current state
+                            if (item.equals(currentAlphabet + currentState[0])) {
+                                transitionFound[0] = true;
+                                currentState[0] = item.replace(currentAlphabet, ""); // get the next state
+                            }
+                        });
+
+                        if (!transitionFound[0]) {
+                            accepted = false;
+                            break;
+                        }
+                    }
+
+                    if (accepted && setOfFinalStates.contains(currentState[0])) {
+                        outcome.put(i, true);
+                    }
+
+                } else {
+                    outcome.put(i, false);
+                }
+
+            }
+        } else if (conversionDone == ConversionEnum.DFA) {
+
+        }
+
+        txtInputString.setText(outcome.toString());
+
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private Map<String, List<String>> convertTableDataToTranstionMap(String[][] tableDataToBeConverted, String[] tableHeader) {
+        Map<String, List<String>> response = new HashMap<>();
+
+        for (int rowId = 0; rowId < tableDataToBeConverted.length; rowId++) {
+            List<String> value = new ArrayList<>();
+            String key = null;
+            for (int columnId = 0; columnId < tableDataToBeConverted[rowId].length; columnId++) {
+                if (columnId == 0) {
+                    key = tableDataToBeConverted[rowId][columnId];
+                } else {
+                  if(tableHeader != null)
+                    value
+                            .add(tableHeader[columnId]
+                                    + tableDataToBeConverted[rowId][columnId]);
+                }
+            }
+            response.put(key, value);
+        }
+
+        return response;
+    }
+
 
     private void btnEpsilonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEpsilonActionPerformed
         String epsilon = btnEpsilon.getText();
@@ -1359,6 +1446,9 @@ public class LandingPage extends javax.swing.JFrame {
         addThetaToEmptyTransitionsInNFA(tableData);
 
         setDataToTransitionTable(tableData, header);
+        globalTableData = tableData;
+        globalTableHeader = globalTableHeader;
+        conversionDone = ConversionEnum.NFA;
 
         // set states
         String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
@@ -1614,7 +1704,6 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JLabel leeImage;
     private javax.swing.JLabel limImage;
     private javax.swing.JTable transitionTable;
@@ -1622,6 +1711,7 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JTextField txtFinalStates;
     private javax.swing.JTextField txtFormalDef;
     private javax.swing.JTextField txtInitialState;
+    private javax.swing.JTextArea txtInputString;
     private javax.swing.JTextField txtStates;
     private javax.swing.JLabel yapImage;
     // End of variables declaration//GEN-END:variables
