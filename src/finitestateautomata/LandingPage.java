@@ -34,6 +34,7 @@ public class LandingPage extends javax.swing.JFrame {
     private String initialState;
     private Set<String> setOfFinalStates = new HashSet<>();
     private Map<String, List<String>> transitions = new HashMap<>();
+    private static final String DEFAULT_DEAD_STATE = "C";
 
     /**
      * Creates new form LandingPage
@@ -995,8 +996,79 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void btnNFA_to_DFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNFA_to_DFAActionPerformed
-        // TODO add your handling code here:
+
+
+        String regularGrammar = inputTextArea.getText();
+        transitions = createMapOfTransitions(regularGrammar);
+
+        // initial state
+        initialState = txtInitialState.getText();
+        
+        // set of states
+        setOfStatesGlobal = Arrays.stream(txtStates.getText()
+                .replaceAll("\\s+", "") // remove white spaces
+                .replaceAll("\\{", "") // remove opening braces
+                .replaceAll("\\}", "") // remove closisng braces
+                .split(",")) // get the states as an array
+                .collect(Collectors.toSet()); // convert to set
+
+        // set final states
+        setOfFinalStates = Arrays.stream(txtFinalStates.getText()
+                .replaceAll("\\s+", "") // remove white spaces
+                .replaceAll("\\{", "") // remove opening braces
+                .replaceAll("\\}", "") // remove closisng braces
+                .split(",")) // get the states as an array
+                .collect(Collectors.toSet()); // convert to set
+        
+        // set of alphabets
+        setOfAlphabetsGlobal = Arrays.stream(txtAlphabets.getText()
+                .replaceAll("\\s+", "") // remove white spaces
+                .replaceAll("\\{", "") // remove opening braces
+                .replaceAll("\\}", "") // remove closisng braces
+                .split(",")) // get the states as an array
+                .collect(Collectors.toSet()); // convert to set
+
+        String[] header = getTransitionTableHeader();
+        String[][] tableData = getTransitionTableData(header, transitions);
+        
+        tableData = addDeadState(tableData);
+        
+        setDataToTransitionTable(tableData, header);
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
+
+    private String[][] addDeadState(String[][] tableData) {
+        // check if there are empty transitions and introduce a dead state
+        String[][] newTableData = new String[tableData.length + 1][tableData[0].length];
+        
+        for (int x =0; x < tableData.length; x++){
+            for (int y =0; y < tableData[0].length; y++){
+                if(tableData[x][y] == null || tableData[x][y].isEmpty() || tableData[x][y].isBlank()){
+                    tableData[x][y] = DEFAULT_DEAD_STATE;
+                }        
+            }
+        }
+        
+        // copy data
+        for (int x =0; x < tableData.length; x++){
+            for (int y =0; y < tableData[0].length; y++){
+                
+                newTableData[x][y] = tableData[x][y];
+            }
+        }
+        
+        // set tranisitions for the dead state
+        for(int x = 0; x < newTableData[0].length; x++){
+            newTableData[newTableData.length -1][x] = DEFAULT_DEAD_STATE;
+        }
+        
+        return newTableData;
+    }
+
+
+    private void setDataToTransitionTable(String[][] tableData, String[] header) {
+        DefaultTableModel model = new DefaultTableModel(tableData, header);
+        transitionTable.setModel(model);
+    }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
@@ -1064,8 +1136,7 @@ public class LandingPage extends javax.swing.JFrame {
         String[][] tableData = getTransitionTableData(header, transitions);
         addThetaToEmptyTransitionsInNFA(tableData);
 
-        DefaultTableModel model = new DefaultTableModel(tableData, header);
-        transitionTable.setModel(model);
+        setDataToTransitionTable(tableData, header);
 
         // set states
         String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
