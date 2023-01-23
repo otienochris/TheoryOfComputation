@@ -170,7 +170,7 @@ public class LandingPage extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        txtInputString = new javax.swing.JTextArea();
+        txtTestString = new javax.swing.JTextArea();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel27 = new javax.swing.JLabel();
         jButton8 = new javax.swing.JButton();
@@ -347,9 +347,7 @@ public class LandingPage extends javax.swing.JFrame {
                         .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addGap(366, 366, 366))
+                            .addComponent(jLabel10)
                             .addComponent(chowImage, javax.swing.GroupLayout.PREFERRED_SIZE, 399, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)
                             .addComponent(jLabel6)
@@ -489,6 +487,11 @@ public class LandingPage extends javax.swing.JFrame {
         btnClear.setForeground(new java.awt.Color(255, 255, 255));
         btnClear.setText("Clear");
         btnClear.setFocusable(false);
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         jLabel26.setFont(new java.awt.Font("Liberation Sans", 3, 18)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
@@ -594,6 +597,7 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel34.setForeground(new java.awt.Color(255, 255, 255));
         jLabel34.setText("Formal Definition. (M)");
 
+        txtFormalDef.setEditable(false);
         txtFormalDef.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         txtFormalDef.setText("{Q,∑, δ, q0,F}");
         txtFormalDef.addActionListener(new java.awt.event.ActionListener() {
@@ -749,10 +753,10 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        txtInputString.setColumns(20);
-        txtInputString.setRows(5);
-        txtInputString.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 51, 51)));
-        jScrollPane4.setViewportView(txtInputString);
+        txtTestString.setColumns(20);
+        txtTestString.setRows(5);
+        txtTestString.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 51, 51)));
+        jScrollPane4.setViewportView(txtTestString);
 
         jLabel27.setFont(new java.awt.Font("Monospaced", 3, 18)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(0, 0, 0));
@@ -1316,7 +1320,7 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        String[] entries = txtInputString.getText().split("\n");
+        String[] entries = txtTestString.getText().split("\n");
 
         Map<String, List<String>> transitionFromTableData = convertTableDataToTranstionMap(globalTableData, globalTableHeader);
         Map<Integer, Boolean> outcome = new HashMap<>();
@@ -1364,7 +1368,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         }
 
-        txtInputString.setText(outcome.toString());
+        txtTestString.setText(outcome.toString());
 
     }//GEN-LAST:event_jButton8ActionPerformed
 
@@ -1527,6 +1531,17 @@ public class LandingPage extends javax.swing.JFrame {
         String theta = btnTheta.getText();
         setClipboardContent(theta);
     }//GEN-LAST:event_btnThetaActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        inputTextArea.setText("");
+        txtStates.setText("");
+        txtAlphabets.setText("");
+        txtInitialState.setText("");
+        txtFinalStates.setText("");
+        txtTestString.setText("");
+        DefaultTableModel model = (DefaultTableModel) transitionTable.getModel();
+        model.setRowCount(0);
+    }//GEN-LAST:event_btnClearActionPerformed
 
     // util methods
     private Map<String, List<String>> convertEpsilonRegularGrammarToEpsilonFreeRG(String regularGrammar) {
@@ -1711,8 +1726,8 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JTextField txtFinalStates;
     private javax.swing.JTextField txtFormalDef;
     private javax.swing.JTextField txtInitialState;
-    private javax.swing.JTextArea txtInputString;
     private javax.swing.JTextField txtStates;
+    private javax.swing.JTextArea txtTestString;
     private javax.swing.JLabel yapImage;
     // End of variables declaration//GEN-END:variables
 
