@@ -1165,6 +1165,12 @@ public class LandingPage extends javax.swing.JFrame {
                 .replaceAll("\\}", "") // remove closisng braces
                 .split(",")) // get the states as an array
                 .collect(Collectors.toSet()); // convert to set
+        
+        System.out.println("****states: " + setOfStatesGlobal.toString());
+        System.out.println("****Alphabets:" + setOfAlphabetsGlobal.toString());
+        System.out.println("****Final States:" + setOfFinalStates.toString());
+        System.out.println("****Initial State: " + initialState);
+        System.out.println("****" + transitions.toString());
 
         String[] header = getTransitionTableHeader();
         String[][] tableData = getTransitionTableData(header, transitions);
@@ -1172,114 +1178,130 @@ public class LandingPage extends javax.swing.JFrame {
 
 //        tableData = addDeadState(tableData);
         if (!nfaHasMultipleOptions) {
+            System.out.println("Adding dead state");
             tableData = addDeadState(tableData);
             setDataToTransitionTable(tableData, header); // set data to table
 
             updateAllStatesAndFinalStates(tableData);
+
+            // convert table data to transition
+            transitions = convertTableDataToTranstionMap(tableData, header);
+            String dfaTransitions = convertTransitionMapToTransitionString(transitions);
+            inputRegularGrammar.setText(dfaTransitions);
+
             globalTableData = tableData;
             globalTableHeader = header;
             conversionDone = ConversionEnum.DFA;
 
         } else {
-
+            System.out.println("Handling transitions alphabets that can have multiple options");
             // create stack of states to traverse
             Stack<String> pendingStates = new Stack<>();
             List<String> statesHandled = new ArrayList<>();
 
             newTableData = new String[1][tableData[0].length]; // insert one transition record at a time
+            String[] firstTransitionFromInitialState = new String[header.length];
+            for(String[] record: tableData) {
+                    if(record[0].equals(initialState)) {
+                        firstTransitionFromInitialState = record;
+                    }
+            }
 
             for (int x = 0; x < header.length; x++) {
-                String data = tableData[0][x];
-                if (data != null && data.contains(",")) {
+                String data = firstTransitionFromInitialState[x].replaceAll("\\s+", "");
+                
+                if (x > 0 && data != null && data.contains(",")) {
                     //create new state and store in stack
-                    data = data.replaceAll(",", "");
+                    data = data.replaceAll(",", "").replaceAll("\\s+", "");
                 }
                 if (data != null && !pendingStates.contains(data) && !data.equalsIgnoreCase(initialState)) {
-                    pendingStates.push(data);
+                    pendingStates.push(data.replaceAll("\\s+", ""));
                 }
                 newTableData[0][x] = data;
             }
+            System.out.println("Current pending state: " + pendingStates.toString());
+            System.out.println("Constructed the first line: " + Arrays.toString(newTableData[0]));
             // we have handled the initial state
             statesHandled.add(initialState);
 
             // handle next state
-            while (!pendingStates.empty()) {
+            while (!pendingStates.empty()) { // loop while there are still more states to be traversed
                 String currentStateBeingProcessed = pendingStates.pop();
-                if (setOfStatesGlobal.contains(currentStateBeingProcessed)) {
-                    System.out.println("Handling existing state");
-                    for (int x = 0; x < tableData.length; x++) {
-                        if (tableData[x][0].equals(currentStateBeingProcessed)) {
+                if (setOfStatesGlobal.contains(currentStateBeingProcessed)) { // if current state initially existed
+                    System.out.println("Handling existing state: " + currentStateBeingProcessed);
+                    String[] newRecord = new String[tableData[0].length];
+                    newRecord[0] = currentStateBeingProcessed; // insert the state
+                    for (int x = 0; x < tableData.length; x++) { // loop through current table data
+                        if (tableData[x][0].equals(currentStateBeingProcessed)) { // check the first column
 
-                            for (String item : tableData[x]) {
-                                if (item == null) {
-                                    pendingStates.push(DEFAULT_DEAD_STATE);
+                            String[] oldRecord = tableData[x];
+
+                            for (int itemIdx = 1; itemIdx < oldRecord.length; itemIdx++) {
+                                String columnData = oldRecord[itemIdx];
+
+                                if (columnData != null) {
+                                    columnData = columnData.replaceAll("\\s+", "");  // remove white spaces
                                 }
-                            }
-                            String[] newRecord = Arrays.stream(tableData[x])
-                                    .map(item -> item == null ? DEFAULT_DEAD_STATE : item.contains(",") ? item.replaceAll(",", "") : item)
-                                    .toArray(String[]::new);
+                                String columnDataOld = oldRecord[itemIdx];
+                                if (columnDataOld != null) {
+                                    columnDataOld = columnDataOld.replaceAll("\\s+", ""); // remove whitespaces
+                                }
 
-                            // if a new state is introduced add it to the stack
-                            Arrays.stream(newRecord).forEach(item -> {
-                                if (!setOfStatesGlobal.contains(item)) {
-                                    if (!pendingStates.contains(item) && !statesHandled.contains(item)) {
-                                        pendingStates.push(item);
+                                
+                                columnData = columnDataOld != null && columnDataOld.contains(",") ? columnDataOld.replaceAll(",", ""): columnDataOld;
+                                
+                                if(columnData == null) {
+                                    System.out.println("Adding dead state");
+                                    columnData = DEFAULT_DEAD_STATE;
+                                }
+                                
+                                newRecord[itemIdx] = columnData;
+
+                                System.out.println("State: " + columnData + " :Already present? " + setOfStatesGlobal.contains(columnData));
+                                if (!setOfStatesGlobal.contains(columnData)) { // if the current state is new
+                                    if (!pendingStates.contains(columnData) && !statesHandled.contains(columnData)) { // if is not present in pending state set and not yet handled
+                                        System.out.println("Pushing " + columnData + " into pending states: " + pendingStates.toString());
+                                        pendingStates.push(columnData); // add it to the pending states
+                                        System.out.println("Current pending states: " + pendingStates.toString());
                                     }
                                 }
-                            });
+                            }
 
-                            newTableData = insertNewRowToNewTableData(newTableData, newRecord);
+                            newTableData = insertNewRowToNewTableData(newTableData, newRecord); // add the new record
                         }
                     }
+                    System.out.println("Adding " + currentStateBeingProcessed + " to handled states");
                     statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done               
+                    System.out.println("Currently handled states: " + statesHandled.toString());
                 } else {
-                    System.out.println("Handling new state");
+                    System.out.println(">>Handling new state : " + currentStateBeingProcessed);
+
                     // trace the members of the new state and get the 
                     String[] newRecord = new String[header.length];
-                    newRecord[0] = currentStateBeingProcessed;
-                    System.out.println("Current state: " + currentStateBeingProcessed);
+                    newRecord[0] = currentStateBeingProcessed; // [ AD, ...] adding a new state
 
-                    if (currentStateBeingProcessed != null && currentStateBeingProcessed.equalsIgnoreCase(DEFAULT_DEAD_STATE)) {
-
+                    if (currentStateBeingProcessed != null && currentStateBeingProcessed.equalsIgnoreCase(DEFAULT_DEAD_STATE)) { // dead states return back to dead states
+                        System.out.println("    Handling dead state");
                         for (int columnIndex = 1; columnIndex < header.length; columnIndex++) {
-
                             newRecord[columnIndex] = DEFAULT_DEAD_STATE; // write the new state
-
-                            statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done
                         }
+                        System.out.println("    Adding " + currentStateBeingProcessed + " to handled states");
+                        statesHandled.add(currentStateBeingProcessed); // add the currently processed state as done
+                        System.out.println("    Current pending states: " + pendingStates.toString());
                     } else {
-                        for (int columnIndex = 1; columnIndex < header.length; columnIndex++) {
-                            String[] constituentMembers;
 
-                            if (currentStateBeingProcessed != null && currentStateBeingProcessed.length() == 2) {
-                                constituentMembers = currentStateBeingProcessed.split("");
-                            } else {
-                                constituentMembers = new String[]{currentStateBeingProcessed};
-                            }
+                        for (int columnIndex = 1; columnIndex < header.length; columnIndex++) {
+                            String[] constituentMembers = generateConstituentMembers(currentStateBeingProcessed);
 
                             System.out.println("Members: " + Arrays.toString(constituentMembers));
 
-                            Set<String> unionOfMembers = new HashSet<>();
-
-                            for (String[] record : tableData) { // for each record
-                                for (String member : constituentMembers) { // for each constituent member
-                                    if (record[0].equalsIgnoreCase(member)) {
-                                        String states = record[columnIndex];
-
-                                        if (states != null && states.contains(",")) { // if state like A,B
-                                            Arrays.stream(states.split(",")).forEach(unionOfMembers::add);
-                                            System.out.println("Union of members" + unionOfMembers.toString());
-                                        } else { // if like A
-                                            unionOfMembers.add(states);
-                                        }
-                                    }
-                                }
-                            }
+                            Set<String> unionOfMembers = generateUnionOfMembers(tableData, constituentMembers, columnIndex);
 
                             StringBuilder currentlyUpdatedTransitionState = new StringBuilder();
                             unionOfMembers.forEach(currentlyUpdatedTransitionState::append);
 
-                            final String currentlyUpdatedTransitionStateToString = currentlyUpdatedTransitionState.toString();
+                            String currentlyUpdatedTransitionStateToString = currentlyUpdatedTransitionState.toString();
+                            currentlyUpdatedTransitionStateToString = currentlyUpdatedTransitionStateToString.replaceAll("\\s+", "");
                             System.out.println("Adding state: " + currentlyUpdatedTransitionStateToString);
 
                             newRecord[columnIndex] = currentlyUpdatedTransitionState.toString(); // write the new state
@@ -1312,6 +1334,35 @@ public class LandingPage extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
 
+    private Set<String> generateUnionOfMembers(String[][] tableData, String[] constituentMembers, int columnIndex) {
+        Set<String> unionOfMembers = new HashSet<>();
+        for (String[] record : tableData) { // for each record
+            for (String member : constituentMembers) { // for each constituent member
+                if (record[0].equalsIgnoreCase(member)) {
+                    String states = record[columnIndex];
+
+                    if (states != null && states.contains(",")) { // if state like A,B
+                        Arrays.stream(states.split(",")).forEach(unionOfMembers::add);
+                        System.out.println("Union of members" + unionOfMembers.toString());
+                    } else if (states != null) { // if like A
+                        unionOfMembers.add(states);
+                    }
+                }
+            }
+        }
+        return unionOfMembers;
+    }
+
+    private String[] generateConstituentMembers(String currentStateBeingProcessed) {
+        String[] constituentMembers;
+        if (currentStateBeingProcessed != null && currentStateBeingProcessed.length() == 2) {
+            constituentMembers = currentStateBeingProcessed.split("");
+        } else {
+            constituentMembers = new String[]{currentStateBeingProcessed};
+        }
+        return constituentMembers;
+    }
+
     private void updateAllStatesAndFinalStates(String[][] newTableData) {
         // set final states
         Set<String> allStates = new HashSet<>(); // states after conversion
@@ -1341,7 +1392,7 @@ public class LandingPage extends javax.swing.JFrame {
     }
 
     private String[][] insertNewRowToNewTableData(String[][] newTableData, String[] newRecord) {
-        System.out.println("Adding record to new table data");
+        System.out.println("    Adding record to new table data: " + Arrays.toString(newRecord));
         String[][] newTableDataResponse = new String[newTableData.length + 1][newTableData[0].length];
 
         // copy the old columnData
@@ -1677,7 +1728,6 @@ public class LandingPage extends javax.swing.JFrame {
 //            initialState = "X";
 //            setOfStatesGlobal.add(initialState); // add the current state
 //        }
-
         transitions = response;
         return response;
     }
