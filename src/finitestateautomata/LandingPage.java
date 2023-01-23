@@ -54,7 +54,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         initializeGroupMembersPhotos();
 
-        String regularGrammarInput = inputTextArea.getText();
+        String regularGrammarInput = inputRegularGrammar.getText();
 
         if (!regularGrammarInput.isEmpty() && !regularGrammarInput.isBlank()) {
             // get states
@@ -141,7 +141,7 @@ public class LandingPage extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        inputTextArea = new javax.swing.JTextArea();
+        inputRegularGrammar = new javax.swing.JTextArea();
         btnImport = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
@@ -165,7 +165,7 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel38 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
         btnRG_NFA = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnEpsilonFreeNFA = new javax.swing.JButton();
         btnNFA_to_DFA = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
@@ -470,11 +470,11 @@ public class LandingPage extends javax.swing.JFrame {
         jPanel5.setBackground(new java.awt.Color(0, 51, 51));
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        inputTextArea.setColumns(20);
-        inputTextArea.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        inputTextArea.setRows(5);
-        inputTextArea.setText("S -> aA | bB | ɛ\nA -> aA | a | ɛ\nB -> bB | b | ɛ\n");
-        jScrollPane2.setViewportView(inputTextArea);
+        inputRegularGrammar.setColumns(20);
+        inputRegularGrammar.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        inputRegularGrammar.setRows(5);
+        inputRegularGrammar.setText("S -> aA | bB | ɛ\nA -> aA | a | ɛ\nB -> bB | b | ɛ\n");
+        jScrollPane2.setViewportView(inputRegularGrammar);
 
         btnImport.setBackground(new java.awt.Color(213, 137, 54));
         btnImport.setFont(new java.awt.Font("Liberation Sans", 3, 15)); // NOI18N
@@ -495,7 +495,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         jLabel26.setFont(new java.awt.Font("Liberation Sans", 3, 18)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("Regular Grammar (input)");
+        jLabel26.setText("δ - Transitions  / RG - Regular Grammar (input)");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -700,7 +700,7 @@ public class LandingPage extends javax.swing.JFrame {
 
         btnRG_NFA.setBackground(new java.awt.Color(255, 255, 255));
         btnRG_NFA.setForeground(new java.awt.Color(102, 0, 0));
-        btnRG_NFA.setText("NFA");
+        btnRG_NFA.setText("ɛ-NFA");
         btnRG_NFA.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
         btnRG_NFA.setFocusable(false);
         btnRG_NFA.addActionListener(new java.awt.event.ActionListener() {
@@ -709,14 +709,14 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setBackground(new java.awt.Color(255, 255, 255));
-        jButton4.setForeground(new java.awt.Color(102, 0, 0));
-        jButton4.setText("NFA with ɛ");
-        jButton4.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
-        jButton4.setFocusable(false);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnEpsilonFreeNFA.setBackground(new java.awt.Color(255, 255, 255));
+        btnEpsilonFreeNFA.setForeground(new java.awt.Color(102, 0, 0));
+        btnEpsilonFreeNFA.setText("NFA");
+        btnEpsilonFreeNFA.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
+        btnEpsilonFreeNFA.setFocusable(false);
+        btnEpsilonFreeNFA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnEpsilonFreeNFAActionPerformed(evt);
             }
         });
 
@@ -845,7 +845,7 @@ public class LandingPage extends javax.swing.JFrame {
                             .addComponent(btnNFA_to_DFA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEpsilonFreeNFA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(53, 53, 53))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -888,7 +888,7 @@ public class LandingPage extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnEpsilonFreeNFA, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -1052,13 +1052,91 @@ public class LandingPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFormalDefActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void btnEpsilonFreeNFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEpsilonFreeNFAActionPerformed
+        logger.log(Level.INFO, "Converting RG to Epsilon free NFA");
+        String regularGrammar = inputRegularGrammar.getText();
+        initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
+        setOfStatesGlobal = getStates(regularGrammar);
+        setOfAlphabetsGlobal = getAlphabets(regularGrammar);
+
+        transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
+
+        System.out.println(transitions.toString());
+        logger.log(Level.INFO, "Successfully Converted RG to Epsilon free NFA");
+
+        // set final states
+        setOfFinalStates.clear(); // clear first before setting
+        transitions.forEach((key, values) -> {
+            values.forEach(value -> {
+                if (setOfAlphabetsGlobal.contains(value)) {
+                    setOfFinalStates.add(key);
+                }
+            });
+        });
+
+        // set states
+        String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtStates.setText(statesToString);
+
+        // set alphabets
+        setOfAlphabetsGlobal.remove(btnEpsilon.getText());
+        String alphabetsToString = setOfAlphabetsGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtAlphabets.setText(alphabetsToString);
+
+        // TODO
+        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
+
+        // set initial state
+        txtInitialState.setText(initialState);
+
+        // set finalStates
+        String finalStatesToString = setOfFinalStates.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        txtFinalStates.setText(finalStatesToString);
+
+        // create transition table
+        String[] header = getTransitionTableHeader();
+        String[][] tableData = getTransitionTableData(header, transitions);
+        addThetaToEmptyTransitionsInNFA(tableData);
+        setDataToTransitionTable(tableData, header);
+
+        // update the regular grammar input
+        System.out.println(transitions.toString());
+        inputRegularGrammar.setText(convertTransitionMapToTransitionString(transitions));
+
+        globalTableData = tableData;
+        globalTableHeader = header;
+        conversionDone = ConversionEnum.NFA;
+
+
+    }//GEN-LAST:event_btnEpsilonFreeNFAActionPerformed
+
+    private String convertTransitionMapToTransitionString(Map<String, List<String>> transitionMap) {
+        StringBuilder response = new StringBuilder();
+        transitionMap.forEach((key, values) -> {
+            response.append(key).append(" -> ").append(constructRightHandSideOfTransitions(values)).append("\n");
+        });
+        return response.toString();
+    }
+
+    private String constructRightHandSideOfTransitions(List<String> values) {
+
+        StringBuilder response = new StringBuilder();
+
+        final String[] transitionTokens = values.toArray(String[]::new);
+
+        for (int x = 0; x < transitionTokens.length; x++) {
+            if (x != (transitionTokens.length - 1)) { // if is not the last index
+                response.append(transitionTokens[x]).append(" | ");
+            } else {
+                response.append(transitionTokens[x]);
+            }
+        }
+        return response.toString();
+    }
 
     private void btnNFA_to_DFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNFA_to_DFAActionPerformed
 
-        String regularGrammar = inputTextArea.getText();
+        String regularGrammar = inputRegularGrammar.getText();
         transitions = createMapOfTransitions(regularGrammar);
 
         // initial state
@@ -1382,10 +1460,11 @@ public class LandingPage extends javax.swing.JFrame {
                 if (columnId == 0) {
                     key = tableDataToBeConverted[rowId][columnId];
                 } else {
-                  if(tableHeader != null)
-                    value
-                            .add(tableHeader[columnId]
-                                    + tableDataToBeConverted[rowId][columnId]);
+                    if (tableHeader != null) {
+                        value
+                                .add(tableHeader[columnId]
+                                        + tableDataToBeConverted[rowId][columnId]);
+                    }
                 }
             }
             response.put(key, value);
@@ -1423,7 +1502,7 @@ public class LandingPage extends javax.swing.JFrame {
         txtInitialState.setText("");
         txtFinalStates.setText("");
 
-        String regularGrammar = inputTextArea.getText();
+        String regularGrammar = inputRegularGrammar.getText();
 
         initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
 
@@ -1451,8 +1530,8 @@ public class LandingPage extends javax.swing.JFrame {
 
         setDataToTransitionTable(tableData, header);
         globalTableData = tableData;
-        globalTableHeader = globalTableHeader;
-        conversionDone = ConversionEnum.NFA;
+        globalTableHeader = header;
+//        conversionDone = ConversionEnum.E_NFA;
 
         // set states
         String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
@@ -1533,7 +1612,7 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_btnThetaActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        inputTextArea.setText("");
+        inputRegularGrammar.setText("");
         txtStates.setText("");
         txtAlphabets.setText("");
         txtInitialState.setText("");
@@ -1590,17 +1669,16 @@ public class LandingPage extends javax.swing.JFrame {
         }); // all states traversed
 
         // change the initial state by introducing a state
-        if (doesInitialStateAcceptEpsilon) {
-            List<String> value = response.get(initialState.replaceAll("\\s+", "")).stream()
-                    .collect(Collectors.toList()); // this makes sure you do not get reference but the values
-            value.add(btnEpsilon.getText());
-            response.put("X", value);
-            initialState = "X";
-        }
+//        if (doesInitialStateAcceptEpsilon) {
+//            List<String> value = response.get(initialState.replaceAll("\\s+", "")).stream()
+//                    .collect(Collectors.toList()); // this makes sure you do not get reference but the values
+//            value.add(btnEpsilon.getText());
+//            response.put("X", value);
+//            initialState = "X";
+//            setOfStatesGlobal.add(initialState); // add the current state
+//        }
 
         transitions = response;
-        System.out.println(response.toString());
-
         return response;
     }
 
@@ -1664,16 +1742,16 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton btnAlphabet;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnEpsilon;
+    private javax.swing.JButton btnEpsilonFreeNFA;
     private javax.swing.JButton btnImport;
     private javax.swing.JButton btnNFA_to_DFA;
     private javax.swing.JButton btnRG_NFA;
     private javax.swing.JButton btnTheta;
     private javax.swing.JButton btnTransitions;
     private javax.swing.JLabel chowImage;
-    private javax.swing.JTextArea inputTextArea;
+    private javax.swing.JTextArea inputRegularGrammar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
@@ -1735,7 +1813,9 @@ public class LandingPage extends javax.swing.JFrame {
         String[][] cleanData = new String[newTableData.length][newTableData[0].length];
         for (int rowId = 0; rowId < newTableData.length; rowId++) {
             for (int colId = 0; colId < newTableData[rowId].length; colId++) {
-                newTableData[rowId][colId] = newTableData[rowId][colId].replaceAll("null", "");
+                if (newTableData[rowId][colId] != null) {
+                    newTableData[rowId][colId] = newTableData[rowId][colId].replaceAll("null", "");
+                }
                 if (newTableData[rowId][0] != null && !newTableData[rowId][0].contains("null") && !newTableData[rowId][0].isBlank() && !newTableData[rowId][0].isEmpty()) {
                     cleanData[rowId][colId] = newTableData[rowId][colId];
                 }
