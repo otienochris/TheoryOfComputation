@@ -168,7 +168,6 @@ public class LandingPage extends javax.swing.JFrame {
         btnEpsilonFreeNFA = new javax.swing.JButton();
         btnNFA_to_DFA = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         txtTestString = new javax.swing.JTextArea();
         jSeparator3 = new javax.swing.JSeparator();
@@ -742,17 +741,6 @@ public class LandingPage extends javax.swing.JFrame {
             }
         });
 
-        jButton7.setBackground(new java.awt.Color(255, 255, 255));
-        jButton7.setForeground(new java.awt.Color(102, 0, 0));
-        jButton7.setText("Test");
-        jButton7.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
-        jButton7.setFocusable(false);
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-
         txtTestString.setColumns(20);
         txtTestString.setFont(new java.awt.Font("Liberation Mono", 1, 18)); // NOI18N
         txtTestString.setForeground(new java.awt.Color(0, 0, 0));
@@ -767,7 +755,7 @@ public class LandingPage extends javax.swing.JFrame {
         jButton8.setBackground(new java.awt.Color(204, 102, 0));
         jButton8.setFont(new java.awt.Font("Liberation Sans", 3, 18)); // NOI18N
         jButton8.setForeground(new java.awt.Color(255, 255, 255));
-        jButton8.setText("Check");
+        jButton8.setText("Test");
         jButton8.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(102, 0, 0)));
         jButton8.setFocusable(false);
         jButton8.addActionListener(new java.awt.event.ActionListener() {
@@ -867,8 +855,7 @@ public class LandingPage extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jScrollPane4)
                                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)))
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 835, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(97, 97, 97))
@@ -905,9 +892,7 @@ public class LandingPage extends javax.swing.JFrame {
                                 .addComponent(btnTransitions, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnAlphabet, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnTheta, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(58, 58, 58)
-                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGap(104, 104, 104)
                             .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel27)
@@ -1202,12 +1187,7 @@ public class LandingPage extends javax.swing.JFrame {
             List<String> statesHandled = new ArrayList<>();
 
             newTableData = new String[1][tableData[0].length]; // insert one transition record at a time
-            String[] firstTransitionFromInitialState = new String[header.length];
-            for (String[] record : tableData) {
-                if (record[0].equals(initialState)) {
-                    firstTransitionFromInitialState = record;
-                }
-            }
+            String[] firstTransitionFromInitialState = getFirstTransitonRecord(header, tableData);
 
             for (int x = 0; x < header.length; x++) {
                 String data = firstTransitionFromInitialState[x].replaceAll("\\s+", "");
@@ -1327,6 +1307,10 @@ public class LandingPage extends javax.swing.JFrame {
             System.out.println("Handled: " + statesHandled.toString());
             setDataToTransitionTable(newTableData, header); // set data to table
             updateAllStatesAndFinalStates(newTableData);
+            
+            String transitionsString = convertTransitionMapToTransitionString(convertTableDataToTranstionMap(newTableData, header));
+            inputRegularGrammar.setText(transitionsString);
+            
             globalTableData = newTableData;
             globalTableHeader = header;
             conversionDone = ConversionEnum.DFA;
@@ -1334,6 +1318,17 @@ public class LandingPage extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
+
+    private String[] getFirstTransitonRecord(String[] header, String[][] tableData) {
+        System.out.println("Getting record for first transition: " + tableData.length);
+        String[] firstTransitionFromInitialState = new String[header.length];
+        for (String[] record : tableData) {
+            if (record[0].equals(initialState)) {
+                firstTransitionFromInitialState = record;
+            }
+        }
+        return firstTransitionFromInitialState;
+    }
 
     private Set<String> generateUnionOfMembers(String[][] tableData, String[] constituentMembers, int columnIndex) {
         Set<String> unionOfMembers = new HashSet<>();
@@ -1445,10 +1440,6 @@ public class LandingPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
-
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         
 //        txtTestString.setText("");
@@ -1480,16 +1471,15 @@ public class LandingPage extends javax.swing.JFrame {
                         String itemWithoutSpace = item.replaceAll("\\s+", "");
                         System.out.println("        transition: " + itemWithoutSpace);
                         // move from current state
-                        String text = currentAlphabet + currentState[0].replaceAll("\\s+", "");
-                        System.out.println("            Checking if [" + itemWithoutSpace + "] matches [" + text + "] or [" + currentAlphabet + "]");
-                        if (itemWithoutSpace.equals(text) || itemWithoutSpace.equals(currentAlphabet)) { // eg alphabet a and transition is (aA or a) == this means it accepts this alphabet
-                            System.out.println("                [" + itemWithoutSpace + "] matches [" + text + "] or [" + currentAlphabet + "]");
+                        System.out.println("            Checking if [" + currentAlphabet + "] is part of  [" + itemWithoutSpace + "]");
+                        if (itemWithoutSpace.contains(currentAlphabet)) { // eg alphabet a and transition is (aA or a) == this means it accepts this alphabet
+                            System.out.println("                [" + currentAlphabet + "] matches [" +itemWithoutSpace + "]");
                             transitionFound[0] = true;
                             if (itemWithoutSpace.length() == 2) {
                                 currentState[0] = item.replace(currentAlphabet, ""); // get the next state
                             }
                         } else {
-                            System.out.println("                [" + itemWithoutSpace + "] does not matche either [" + text + "] or [" + currentAlphabet + "]");
+                            System.out.println("                [" + currentAlphabet + "] do not match [" +itemWithoutSpace + "]");
                         }
                     });
 
@@ -1499,10 +1489,18 @@ public class LandingPage extends javax.swing.JFrame {
 
                     if (j == alphabetsToCheck.length - 1 && accepted && setOfFinalStates.contains(currentState[0])) { // if the current state accepts the alphabet, is the final state and the string is completed
                         outcome.put(entries[i], "Accepted");
+                    } else if (j == alphabetsToCheck.length - 1 && !accepted) {
+                        outcome.put(entries[i], "Rejected");
+                    } else if (alphabetsToCheck.length == 1 && setOfFinalStates.contains(currentState[0])) {
+                        outcome.put(entries[i], "Accepted");
+                    } else if (alphabetsToCheck.length == 1 && !setOfFinalStates.contains(currentState[0])) {
+                        outcome.put(entries[i], "Rejected");
                     }
                     
                     System.out.println("=====================");
                 }
+                
+                System.out.println("            Current matches: " + outcome.toString()); // check current matches
 
             } else {
                 outcome.put(entries[i], "Rejected");
@@ -1830,7 +1828,6 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
