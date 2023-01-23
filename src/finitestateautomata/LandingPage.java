@@ -754,6 +754,8 @@ public class LandingPage extends javax.swing.JFrame {
         });
 
         txtTestString.setColumns(20);
+        txtTestString.setFont(new java.awt.Font("Liberation Mono", 1, 18)); // NOI18N
+        txtTestString.setForeground(new java.awt.Color(0, 0, 0));
         txtTestString.setRows(5);
         txtTestString.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 51, 51)));
         jScrollPane4.setViewportView(txtTestString);
@@ -1165,7 +1167,7 @@ public class LandingPage extends javax.swing.JFrame {
                 .replaceAll("\\}", "") // remove closisng braces
                 .split(",")) // get the states as an array
                 .collect(Collectors.toSet()); // convert to set
-        
+
         System.out.println("****states: " + setOfStatesGlobal.toString());
         System.out.println("****Alphabets:" + setOfAlphabetsGlobal.toString());
         System.out.println("****Final States:" + setOfFinalStates.toString());
@@ -1201,15 +1203,15 @@ public class LandingPage extends javax.swing.JFrame {
 
             newTableData = new String[1][tableData[0].length]; // insert one transition record at a time
             String[] firstTransitionFromInitialState = new String[header.length];
-            for(String[] record: tableData) {
-                    if(record[0].equals(initialState)) {
-                        firstTransitionFromInitialState = record;
-                    }
+            for (String[] record : tableData) {
+                if (record[0].equals(initialState)) {
+                    firstTransitionFromInitialState = record;
+                }
             }
 
             for (int x = 0; x < header.length; x++) {
                 String data = firstTransitionFromInitialState[x].replaceAll("\\s+", "");
-                
+
                 if (x > 0 && data != null && data.contains(",")) {
                     //create new state and store in stack
                     data = data.replaceAll(",", "").replaceAll("\\s+", "");
@@ -1247,14 +1249,13 @@ public class LandingPage extends javax.swing.JFrame {
                                     columnDataOld = columnDataOld.replaceAll("\\s+", ""); // remove whitespaces
                                 }
 
-                                
-                                columnData = columnDataOld != null && columnDataOld.contains(",") ? columnDataOld.replaceAll(",", ""): columnDataOld;
-                                
-                                if(columnData == null) {
+                                columnData = columnDataOld != null && columnDataOld.contains(",") ? columnDataOld.replaceAll(",", "") : columnDataOld;
+
+                                if (columnData == null) {
                                     System.out.println("Adding dead state");
                                     columnData = DEFAULT_DEAD_STATE;
                                 }
-                                
+
                                 newRecord[itemIdx] = columnData;
 
                                 System.out.println("State: " + columnData + " :Already present? " + setOfStatesGlobal.contains(columnData));
@@ -1449,57 +1450,83 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        String[] entries = txtTestString.getText().split("\n");
+        
+//        txtTestString.setText("");
+        String[] entries = txtTestString.getText().split("\n"); // the strings
 
         Map<String, List<String>> transitionFromTableData = convertTableDataToTranstionMap(globalTableData, globalTableHeader);
-        Map<Integer, Boolean> outcome = new HashMap<>();
+        Map<String, String> outcome = new HashMap<>(); // eg {1001: true}
 
-        if (conversionDone == ConversionEnum.NFA) {
-            for (int i = 0; i < entries.length; i++) {
-                final String[] alphabetsToCheck = entries[i]
-                        .replaceAll("\\s+", "") // remove spaces
-                        .split("");
+        for (int i = 0; i < entries.length; i++) { // one entry at a time
+            final String[] alphabetsToCheck = entries[i] // eg 10010
+                    .replaceAll("\\s+", "") // remove spaces
+                    .split(""); // eg [1,0,0,1,0]
+            Boolean allMatch = checkIfAlphabetsAreValid(alphabetsToCheck);
 
-                // check if alphates are valid
-                Boolean allMatch = Arrays.stream(alphabetsToCheck).collect(Collectors.toSet()).stream().allMatch(setOfAlphabetsGlobal::contains);
-                if (allMatch) {
-                    boolean accepted = true;
-                    final String[] currentState = new String[]{txtInitialState.getText()};
+            if (allMatch) {
+                boolean accepted = true;
+                final String[] currentState = new String[]{txtInitialState.getText()}; // we start with the initial state
+                System.out.println("Current state: " + currentState[0]);
 
-                    for (int j = 0; j < alphabetsToCheck.length; j++) { // loop each alphabet like 1,0,0,1
+                for (int j = 0; j < alphabetsToCheck.length; j++) { // loop each alphabet like 1 then 0 then 0 then 1 etc
+                    
+                    final String currentAlphabet = alphabetsToCheck[j]; // eg 1
+                    System.out.println("=================");
+                    System.out.println("checking alphabet " + currentAlphabet);
 
-                        final String currentAlphabet = alphabetsToCheck[j];
-                        final Boolean[] transitionFound = new Boolean[]{false};
-                        transitionFromTableData.get(currentState[0]).forEach(item -> {
-                            // move from current state
-                            if (item.equals(currentAlphabet + currentState[0])) {
-                                transitionFound[0] = true;
+                    final Boolean[] transitionFound = new Boolean[]{false};
+                    
+                    transitions.get(currentState[0]).forEach(item -> { // A = [aB, cC]
+                        String itemWithoutSpace = item.replaceAll("\\s+", "");
+                        System.out.println("        transition: " + itemWithoutSpace);
+                        // move from current state
+                        String text = currentAlphabet + currentState[0].replaceAll("\\s+", "");
+                        System.out.println("            Checking if [" + itemWithoutSpace + "] matches [" + text + "] or [" + currentAlphabet + "]");
+                        if (itemWithoutSpace.equals(text) || itemWithoutSpace.equals(currentAlphabet)) { // eg alphabet a and transition is (aA or a) == this means it accepts this alphabet
+                            System.out.println("                [" + itemWithoutSpace + "] matches [" + text + "] or [" + currentAlphabet + "]");
+                            transitionFound[0] = true;
+                            if (itemWithoutSpace.length() == 2) {
                                 currentState[0] = item.replace(currentAlphabet, ""); // get the next state
                             }
-                        });
-
-                        if (!transitionFound[0]) {
-                            accepted = false;
-                            break;
+                        } else {
+                            System.out.println("                [" + itemWithoutSpace + "] does not matche either [" + text + "] or [" + currentAlphabet + "]");
                         }
+                    });
+
+                    if (!transitionFound[0]) { // if not transition then it fails
+                        accepted = false;
                     }
 
-                    if (accepted && setOfFinalStates.contains(currentState[0])) {
-                        outcome.put(i, true);
+                    if (j == alphabetsToCheck.length - 1 && accepted && setOfFinalStates.contains(currentState[0])) { // if the current state accepts the alphabet, is the final state and the string is completed
+                        outcome.put(entries[i], "Accepted");
                     }
-
-                } else {
-                    outcome.put(i, false);
+                    
+                    System.out.println("=====================");
                 }
 
+            } else {
+                outcome.put(entries[i], "Rejected");
             }
-        } else if (conversionDone == ConversionEnum.DFA) {
 
         }
 
-        txtTestString.setText(outcome.toString());
+        txtTestString.setText(outcome.toString()
+                .replaceAll("\\s+", "") // remove white spaces
+                .replaceAll(",", "\n") // show them as list
+                .replaceAll("\\}", "") // remove the braces
+                .replaceAll("\\{", "")); // remove the braces
 
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private Boolean checkIfAlphabetsAreValid(final String[] alphabetsToCheck) {
+        System.out.println("Checking if alphabets are valid");
+        // check if alphates are valid
+        Boolean allMatch = Arrays.stream(alphabetsToCheck)
+                .collect(Collectors.toSet()) // eg from [1,0,0,1,0,0] to [1,0]
+                .stream().allMatch(setOfAlphabetsGlobal::contains); // check if the given alphabets all exists in the set of alphabets
+        System.out.println("Are alphabets valid : " + allMatch);
+        return allMatch;
+    }
 
     private Map<String, List<String>> convertTableDataToTranstionMap(String[][] tableDataToBeConverted, String[] tableHeader) {
         Map<String, List<String>> response = new HashMap<>();
