@@ -1450,6 +1450,43 @@ public class LandingPage extends javax.swing.JFrame {
 
         Set<String> newStates = processEquivalence(transitionsGlobal, setOfAllStatesGlobal, setOfFinalStatesGlobal);
 
+        
+        Map<String, List<String>> newTransitions = new HashMap<>();
+        newStates.forEach(state -> {
+            if (state.contains(initialStateGlobal)) {
+                initialStateGlobal = state;
+                txtInitialState.setText(state);
+            }
+
+            if (setOfFinalStatesGlobal.stream().allMatch(finalState -> state.contains(finalState))) {
+                if (!setOfFinalStatesGlobal.contains(state)) {
+                    setOfFinalStatesGlobal.add(state);
+                }
+            }
+            
+            if(transitionsGlobal.containsKey(state)){
+                List<String> value = transitionsGlobal.get(state);
+                newTransitions.put(state, value);
+            } else {
+                String[] stateValues = state.split("_"); // eg A_C gives [A,C]
+                List<String> value = transitionsGlobal.get(stateValues[0]);
+                newTransitions.put(state, value);
+            }
+
+        });
+        
+        transitionsGlobal = newTransitions;
+        
+        // set transiton table
+        String[] header = getTransitionTableHeader();
+        String[][] tableData = getTransitionTableData(header, transitionsGlobal);
+        addThetaToEmptyTransitionsInNFA(tableData);
+        setDataToTransitionTable(tableData, header);
+
+        System.out.println("New Transitions : " + newTransitions.toString());
+        String currentMinimizedTransitions = convertTransitionMapToTransitionString(transitionsGlobal);
+        inputRegularGrammar.setText(currentMinimizedTransitions);
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private Set<String> processEquivalence(Map<String, List<String>> transitions, Set<String> setOfAllStates, Set<String> setOfFinalStates) {
@@ -1512,26 +1549,26 @@ public class LandingPage extends javax.swing.JFrame {
                 .collect(Collectors.toList())
                 .stream().map(item -> item.replaceAll("\\s+", "").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "_"))
                 .collect(Collectors.toList());
-        
-        
+
         final List<String> newStates = statesInString.stream().filter(item -> item.contains("_")).collect(Collectors.toList());
         final List<String> oldStates = statesInString.stream().filter(item -> !item.contains("_")).collect(Collectors.toList());
-        
+
         response.addAll(newStates);
-        
+
         oldStates.forEach(oldState -> {
-            
-            Boolean [] present = {false};
-            newStates.forEach(newState ->{
-                    if (newState.contains(oldState))
-                        present[0] = true;      
-                });
-            
-            if(!present[0]) {
+
+            Boolean[] present = {false};
+            newStates.forEach(newState -> {
+                if (newState.contains(oldState)) {
+                    present[0] = true;
+                }
+            });
+
+            if (!present[0]) {
                 response.add(oldState);
             }
         });
-        
+
         response.forEach(System.out::println);
 
         return response;
