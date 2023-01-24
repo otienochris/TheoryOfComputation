@@ -6,6 +6,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +69,7 @@ public class LandingPage extends javax.swing.JFrame {
             String alphabetsToString = setOfAlphabetsGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
             txtAlphabets.setText(alphabetsToString);
         }
+        
 
     }
 
@@ -145,6 +148,8 @@ public class LandingPage extends javax.swing.JFrame {
         btnImport = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
+        txtFilePath = new javax.swing.JTextField();
+        labelImport = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         transitionTable = new javax.swing.JTable();
@@ -480,6 +485,11 @@ public class LandingPage extends javax.swing.JFrame {
         btnImport.setForeground(new java.awt.Color(255, 255, 255));
         btnImport.setText("Import");
         btnImport.setFocusable(false);
+        btnImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImportActionPerformed(evt);
+            }
+        });
 
         btnClear.setBackground(new java.awt.Color(213, 137, 54));
         btnClear.setFont(new java.awt.Font("Liberation Sans", 3, 15)); // NOI18N
@@ -496,6 +506,13 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
         jLabel26.setText("δ - Transitions  / RG - Regular Grammar (input)");
 
+        txtFilePath.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        txtFilePath.setForeground(new java.awt.Color(0, 0, 0));
+
+        labelImport.setFont(new java.awt.Font("Liberation Sans", 3, 15)); // NOI18N
+        labelImport.setForeground(new java.awt.Color(255, 255, 255));
+        labelImport.setText("Enter absolute file path below to import:");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -508,7 +525,9 @@ public class LandingPage extends javax.swing.JFrame {
                         .addComponent(btnImport, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(120, 120, 120)
                         .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel26, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtFilePath)
+                    .addComponent(labelImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(34, 34, 34))
         );
         jPanel5Layout.setVerticalGroup(
@@ -517,8 +536,12 @@ public class LandingPage extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addComponent(jLabel26)
                 .addGap(42, 42, 42)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21)
+                .addComponent(labelImport)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFilePath, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnImport, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnClear))
@@ -566,10 +589,8 @@ public class LandingPage extends javax.swing.JFrame {
         jLabel33.setText("Transition Table:");
 
         txtStates.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        txtStates.setText("{A, B, C}");
 
         txtAlphabets.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        txtAlphabets.setText("{a, b, c}");
         txtAlphabets.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtAlphabetsActionPerformed(evt);
@@ -577,7 +598,6 @@ public class LandingPage extends javax.swing.JFrame {
         });
 
         txtInitialState.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        txtInitialState.setText("A");
         txtInitialState.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtInitialStateActionPerformed(evt);
@@ -585,7 +605,6 @@ public class LandingPage extends javax.swing.JFrame {
         });
 
         txtFinalStates.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
-        txtFinalStates.setText("B");
         txtFinalStates.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtFinalStatesActionPerformed(evt);
@@ -1698,6 +1717,33 @@ public class LandingPage extends javax.swing.JFrame {
         model.setRowCount(0);
     }//GEN-LAST:event_btnClearActionPerformed
 
+    private void btnImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportActionPerformed
+             
+        
+        StringBuilder content = new StringBuilder();
+        
+        String filePath = txtFilePath.getText();
+        File myObj = new File(filePath);
+        
+        try (Scanner myReader = new Scanner(myObj)) {
+            while (myReader.hasNextLine()) {
+                content.append(myReader.nextLine()).append("\n");
+            }
+            System.out.println("Data: " + myReader.toString());
+        } catch (FileNotFoundException e) {
+            logger.severe("File not found exception");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "An error occurred reading data from {0} \n\n {1}", new String[]{filePath, e.getMessage()});
+        }
+        
+        if (content.length() == 0) {
+            logger.log(Level.WARNING, "The file {0} seems empty", new String[]{filePath});
+        }
+        
+        
+        inputRegularGrammar.setText(content.toString());
+    }//GEN-LAST:event_btnImportActionPerformed
+
     // util methods
     private Map<String, List<String>> convertEpsilonRegularGrammarToEpsilonFreeRG(String regularGrammar) {
         logger.log(Level.INFO, "Converting Epsilon Regular Grammar to Epsilon Free Regular Grammar");
@@ -1871,10 +1917,12 @@ public class LandingPage extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel labelImport;
     private javax.swing.JLabel leeImage;
     private javax.swing.JLabel limImage;
     private javax.swing.JTable transitionTable;
     private javax.swing.JTextField txtAlphabets;
+    private javax.swing.JTextField txtFilePath;
     private javax.swing.JTextField txtFinalStates;
     private javax.swing.JTextField txtFormalDef;
     private javax.swing.JTextField txtInitialState;
