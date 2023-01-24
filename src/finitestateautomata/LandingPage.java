@@ -28,11 +28,11 @@ import javax.swing.table.DefaultTableModel;
 public class LandingPage extends javax.swing.JFrame {
 
     private final static Logger logger = Logger.getLogger(LandingPage.class.getName());
-    private Set<String> setOfStatesGlobal = new HashSet<>();
+    private Set<String> setOfAllStatesGlobal = new HashSet<>();
     private Set<String> setOfAlphabetsGlobal = new HashSet<>();
-    private String initialState;
-    private Set<String> setOfFinalStates = new HashSet<>();
-    private Map<String, List<String>> transitions = new HashMap<>();
+    private String initialStateGlobal;
+    private Set<String> setOfFinalStatesGlobal = new HashSet<>();
+    private Map<String, List<String>> transitionsGlobal = new HashMap<>();
     private static final String DEFAULT_DEAD_STATE = "Z";
     private boolean nfaHasMultipleOptions = false;
     private ConversionEnum conversionDone;
@@ -60,8 +60,8 @@ public class LandingPage extends javax.swing.JFrame {
 
         if (!regularGrammarInput.isEmpty() && !regularGrammarInput.isBlank()) {
             // get states
-            setOfStatesGlobal = getStates(regularGrammarInput);
-            String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+            setOfAllStatesGlobal = getStates(regularGrammarInput);
+            String statesToString = setOfAllStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
             txtStates.setText(statesToString);
 
             // get alphabets
@@ -69,7 +69,6 @@ public class LandingPage extends javax.swing.JFrame {
             String alphabetsToString = setOfAlphabetsGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
             txtAlphabets.setText(alphabetsToString);
         }
-        
 
     }
 
@@ -1061,27 +1060,27 @@ public class LandingPage extends javax.swing.JFrame {
     private void btnEpsilonFreeNFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEpsilonFreeNFAActionPerformed
         logger.log(Level.INFO, "Converting RG to Epsilon free NFA");
         String regularGrammar = inputRegularGrammar.getText();
-        initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
-        setOfStatesGlobal = getStates(regularGrammar);
+        initialStateGlobal = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
+        setOfAllStatesGlobal = getStates(regularGrammar);
         setOfAlphabetsGlobal = getAlphabets(regularGrammar);
 
-        transitions = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
+        transitionsGlobal = convertEpsilonRegularGrammarToEpsilonFreeRG(regularGrammar);
 
-        System.out.println(transitions.toString());
+        System.out.println(transitionsGlobal.toString());
         logger.log(Level.INFO, "Successfully Converted RG to Epsilon free NFA");
 
         // set final states
-        setOfFinalStates.clear(); // clear first before setting
-        transitions.forEach((key, values) -> {
+        setOfFinalStatesGlobal.clear(); // clear first before setting
+        transitionsGlobal.forEach((key, values) -> {
             values.forEach(value -> {
                 if (setOfAlphabetsGlobal.contains(value)) {
-                    setOfFinalStates.add(key);
+                    setOfFinalStatesGlobal.add(key);
                 }
             });
         });
 
         // set states
-        String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        String statesToString = setOfAllStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
         txtStates.setText(statesToString);
 
         // set alphabets
@@ -1090,24 +1089,24 @@ public class LandingPage extends javax.swing.JFrame {
         txtAlphabets.setText(alphabetsToString);
 
         // TODO
-        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
+        System.out.println(btnTransitions.getText() + " : " + transitionsGlobal.toString());
 
         // set initial state
-        txtInitialState.setText(initialState);
+        txtInitialState.setText(initialStateGlobal);
 
         // set finalStates
-        String finalStatesToString = setOfFinalStates.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        String finalStatesToString = setOfFinalStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
         txtFinalStates.setText(finalStatesToString);
 
         // create transition table
         String[] header = getTransitionTableHeader();
-        String[][] tableData = getTransitionTableData(header, transitions);
+        String[][] tableData = getTransitionTableData(header, transitionsGlobal);
         addThetaToEmptyTransitionsInNFA(tableData);
         setDataToTransitionTable(tableData, header);
 
         // update the regular grammar input
-        System.out.println(transitions.toString());
-        inputRegularGrammar.setText(convertTransitionMapToTransitionString(transitions));
+        System.out.println(transitionsGlobal.toString());
+        inputRegularGrammar.setText(convertTransitionMapToTransitionString(transitionsGlobal));
 
         globalTableData = tableData;
         globalTableHeader = header;
@@ -1143,43 +1142,28 @@ public class LandingPage extends javax.swing.JFrame {
     private void btnNFA_to_DFAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNFA_to_DFAActionPerformed
 
         String regularGrammar = inputRegularGrammar.getText();
-        transitions = createMapOfTransitions(regularGrammar);
+        transitionsGlobal = createMapOfTransitions(regularGrammar);
 
         // initial state
-        initialState = txtInitialState.getText();
+        initialStateGlobal = txtInitialState.getText();
 
         // set of states
-        setOfStatesGlobal = Arrays.stream(txtStates.getText()
-                .replaceAll("\\s+", "") // remove white spaces
-                .replaceAll("\\{", "") // remove opening braces
-                .replaceAll("\\}", "") // remove closisng braces
-                .split(",")) // get the states as an array
-                .collect(Collectors.toSet()); // convert to set
+        setOfAllStatesGlobal = convertStringSetToJavaSet(txtStates.getText()); // convert to set
 
         // set final states
-        setOfFinalStates = Arrays.stream(txtFinalStates.getText()
-                .replaceAll("\\s+", "") // remove white spaces
-                .replaceAll("\\{", "") // remove opening braces
-                .replaceAll("\\}", "") // remove closisng braces
-                .split(",")) // get the states as an array
-                .collect(Collectors.toSet()); // convert to set
+        setOfFinalStatesGlobal = convertStringSetToJavaSet(txtFinalStates.getText());
 
         // set of alphabets
-        setOfAlphabetsGlobal = Arrays.stream(txtAlphabets.getText()
-                .replaceAll("\\s+", "") // remove white spaces
-                .replaceAll("\\{", "") // remove opening braces
-                .replaceAll("\\}", "") // remove closisng braces
-                .split(",")) // get the states as an array
-                .collect(Collectors.toSet()); // convert to set
+        setOfAlphabetsGlobal = convertStringSetToJavaSet(txtAlphabets.getText());
 
-        System.out.println("****states: " + setOfStatesGlobal.toString());
+        System.out.println("****states: " + setOfAllStatesGlobal.toString());
         System.out.println("****Alphabets:" + setOfAlphabetsGlobal.toString());
-        System.out.println("****Final States:" + setOfFinalStates.toString());
-        System.out.println("****Initial State: " + initialState);
-        System.out.println("****" + transitions.toString());
+        System.out.println("****Final States:" + setOfFinalStatesGlobal.toString());
+        System.out.println("****Initial State: " + initialStateGlobal);
+        System.out.println("****" + transitionsGlobal.toString());
 
         String[] header = getTransitionTableHeader();
-        String[][] tableData = getTransitionTableData(header, transitions);
+        String[][] tableData = getTransitionTableData(header, transitionsGlobal);
         String[][] newTableData = null;
 
 //        tableData = addDeadState(tableData);
@@ -1191,8 +1175,8 @@ public class LandingPage extends javax.swing.JFrame {
             updateAllStatesAndFinalStates(tableData);
 
             // convert table data to transition
-            transitions = convertTableDataToTranstionMap(tableData, header);
-            String dfaTransitions = convertTransitionMapToTransitionString(transitions);
+            transitionsGlobal = convertTableDataToTranstionMap(tableData, header);
+            String dfaTransitions = convertTransitionMapToTransitionString(transitionsGlobal);
             inputRegularGrammar.setText(dfaTransitions);
 
             globalTableData = tableData;
@@ -1215,7 +1199,7 @@ public class LandingPage extends javax.swing.JFrame {
                     //create new state and store in stack
                     data = data.replaceAll(",", "").replaceAll("\\s+", "");
                 }
-                if (data != null && !pendingStates.contains(data) && !data.equalsIgnoreCase(initialState)) {
+                if (data != null && !pendingStates.contains(data) && !data.equalsIgnoreCase(initialStateGlobal)) {
                     pendingStates.push(data.replaceAll("\\s+", ""));
                 }
                 newTableData[0][x] = data;
@@ -1223,12 +1207,12 @@ public class LandingPage extends javax.swing.JFrame {
             System.out.println("Current pending state: " + pendingStates.toString());
             System.out.println("Constructed the first line: " + Arrays.toString(newTableData[0]));
             // we have handled the initial state
-            statesHandled.add(initialState);
+            statesHandled.add(initialStateGlobal);
 
             // handle next state
             while (!pendingStates.empty()) { // loop while there are still more states to be traversed
                 String currentStateBeingProcessed = pendingStates.pop();
-                if (setOfStatesGlobal.contains(currentStateBeingProcessed)) { // if current state initially existed
+                if (setOfAllStatesGlobal.contains(currentStateBeingProcessed)) { // if current state initially existed
                     System.out.println("Handling existing state: " + currentStateBeingProcessed);
                     String[] newRecord = new String[tableData[0].length];
                     newRecord[0] = currentStateBeingProcessed; // insert the state
@@ -1257,8 +1241,8 @@ public class LandingPage extends javax.swing.JFrame {
 
                                 newRecord[itemIdx] = columnData;
 
-                                System.out.println("State: " + columnData + " :Already present? " + setOfStatesGlobal.contains(columnData));
-                                if (!setOfStatesGlobal.contains(columnData)) { // if the current state is new
+                                System.out.println("State: " + columnData + " :Already present? " + setOfAllStatesGlobal.contains(columnData));
+                                if (!setOfAllStatesGlobal.contains(columnData)) { // if the current state is new
                                     if (!pendingStates.contains(columnData) && !statesHandled.contains(columnData)) { // if is not present in pending state set and not yet handled
                                         System.out.println("Pushing " + columnData + " into pending states: " + pendingStates.toString());
                                         pendingStates.push(columnData); // add it to the pending states
@@ -1326,10 +1310,10 @@ public class LandingPage extends javax.swing.JFrame {
             System.out.println("Handled: " + statesHandled.toString());
             setDataToTransitionTable(newTableData, header); // set data to table
             updateAllStatesAndFinalStates(newTableData);
-            
+
             String transitionsString = convertTransitionMapToTransitionString(convertTableDataToTranstionMap(newTableData, header));
             inputRegularGrammar.setText(transitionsString);
-            
+
             globalTableData = newTableData;
             globalTableHeader = header;
             conversionDone = ConversionEnum.DFA;
@@ -1339,10 +1323,10 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNFA_to_DFAActionPerformed
 
     private String[] getFirstTransitonRecord(String[] header, String[][] tableData) {
-        System.out.println("Getting record for first transition: " + tableData.length);
+        System.out.println("Getting record for first transition: " + initialStateGlobal);
         String[] firstTransitionFromInitialState = new String[header.length];
         for (String[] record : tableData) {
-            if (record[0].equals(initialState)) {
+            if (record[0].equals(initialStateGlobal)) {
                 firstTransitionFromInitialState = record;
             }
         }
@@ -1393,7 +1377,7 @@ public class LandingPage extends javax.swing.JFrame {
         // final states
         Set<String> currentFinalStates = new HashSet<>();
         allStates.forEach(state -> {
-            setOfFinalStates.forEach(finalState -> {
+            setOfFinalStatesGlobal.forEach(finalState -> {
                 if (state.contains(finalState)) {
                     if (!currentFinalStates.contains(state)) {
                         currentFinalStates.add(state);
@@ -1456,11 +1440,114 @@ public class LandingPage extends javax.swing.JFrame {
     }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        setOfAllStatesGlobal = convertStringSetToJavaSet(txtStates.getText());
+        setOfAlphabetsGlobal = convertStringSetToJavaSet(txtAlphabets.getText());
+        setOfFinalStatesGlobal = convertStringSetToJavaSet(txtFinalStates.getText());
+        initialStateGlobal = txtInitialState.getText();
+
+        final String dfaTransitions = inputRegularGrammar.getText();
+        transitionsGlobal = createMapOfTransitions(dfaTransitions);
+
+        Set<String> newStates = processEquivalence(transitionsGlobal, setOfAllStatesGlobal, setOfFinalStatesGlobal);
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+    private Set<String> processEquivalence(Map<String, List<String>> transitions, Set<String> setOfAllStates, Set<String> setOfFinalStates) {
+        Set<String> response = new HashSet<>();
+
+        final Set<String> setOfNonFinalStates = setOfAllStates.stream().filter(item -> !setOfFinalStates.contains(item)).collect(Collectors.toSet()); // second set is the set of all non final sets
+        System.out.println(" >> set of non final states: " + setOfNonFinalStates.toString());
+        System.out.println(" >> set of final states: " + setOfFinalStates.toString());
+
+        List<Set<String>> initialListComprisedOfSetOfFinalStatesAndSetOfNonFinalStates = new ArrayList<>();
+        initialListComprisedOfSetOfFinalStatesAndSetOfNonFinalStates.add(setOfNonFinalStates); // eg {A, B, C, D}
+        initialListComprisedOfSetOfFinalStatesAndSetOfNonFinalStates.add(setOfFinalStates); // {E}
+
+        List<Set<String>> finalDerivedSets = new ArrayList<>(); // final/compiled derived states
+
+        initialListComprisedOfSetOfFinalStatesAndSetOfNonFinalStates.forEach(itemInInitialList -> { // eg {A, B, C, D}
+            System.out.println("            >> handling this list : " + itemInInitialList.toString());
+
+            List<Set<String>> temporaryderivedSets = new ArrayList<>(); // to store derived states for each side ie the set of final states and the set of non final states
+
+            // the first set
+            Set<String> firstSetDerivedForTheInitialSet = new HashSet<>(); // the first element is each side create a set first
+            itemInInitialList.stream().findAny().ifPresent(firstSetDerivedForTheInitialSet::add); // get an element from the items eg A from {A, B, C, D}
+            temporaryderivedSets.add(firstSetDerivedForTheInitialSet);
+
+            itemInInitialList.forEach(oneItemInTheInitialSet -> { // loop throug {A, B, C, D} to see if they are quivalent in the current set or not
+                System.out.println("\n\n\n checking if " + oneItemInTheInitialSet + " is equivalent with any state in any of the constructed derived set");
+
+                List<Set<String>> derivedSetsCopy = temporaryderivedSets.stream().collect(Collectors.toList()); // a copy to avoid concurrent modification error
+                derivedSetsCopy.forEach(derivedSet -> { // loop through the current derived sets and check if they are equivalent or require a new set
+                    derivedSet.stream().findAny().ifPresent(state -> { // get any item in the derived set
+                        System.out.println("                    > derived set: " + derivedSet.toString() + " state: " + state);
+                        // if equivalent, join the state
+                        if (areEquivalent(state, oneItemInTheInitialSet, transitions, derivedSet)) { // check if the current item in the initial set is equivalen to any in the derived set
+                            System.out.println("        {" + state + "} is equivalent to {" + oneItemInTheInitialSet + "}");
+                            temporaryderivedSets.stream().forEach(element -> {
+                                if (element.contains(state)) {
+                                    element.add(oneItemInTheInitialSet);
+                                }
+                            });
+                        } else { // if the current item does not find a set it is equivalent to, create its own set
+                            System.out.println("        {" + state + "} is not equivalent to {" + oneItemInTheInitialSet + "}");
+                            Set<String> newSet = new HashSet<>();
+                            newSet.add(oneItemInTheInitialSet);
+                            System.out.println("                Adding derived set: " + newSet.toString());
+
+                            temporaryderivedSets.add(newSet);
+                        }
+                        // else create a new set
+                    });
+                });
+            });
+
+            finalDerivedSets.addAll(temporaryderivedSets.stream().distinct().collect(Collectors.toSet()));
+            System.out.println("Derived sets: " + temporaryderivedSets.toString());
+
+        });
+
+        final List<String> statesInString = finalDerivedSets.stream().map(item -> item.toString())
+                .collect(Collectors.toList())
+                .stream().map(item -> item.replaceAll("\\s+", "").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "_"))
+                .collect(Collectors.toList());
         
+        
+        final List<String> newStates = statesInString.stream().filter(item -> item.contains("_")).collect(Collectors.toList());
+        final List<String> oldStates = statesInString.stream().filter(item -> !item.contains("_")).collect(Collectors.toList());
+        
+        response.addAll(newStates);
+        
+        oldStates.forEach(oldState -> {
+            
+            Boolean [] present = {false};
+            newStates.forEach(newState ->{
+                    if (newState.contains(oldState))
+                        present[0] = true;      
+                });
+            
+            if(!present[0]) {
+                response.add(oldState);
+            }
+        });
+        
+        response.forEach(System.out::println);
+
+        return response;
+    }
+
+    private Set<String> convertStringSetToJavaSet(String stringSet) {
+        return Arrays.stream(stringSet
+                .replaceAll("\\s+", "") // remove white spaces
+                .replaceAll("\\{", "") // remove opening braces
+                .replaceAll("\\}", "") // remove closing braces
+                .split(",")) // create an array of the states
+                .collect(Collectors.toSet());
+    }
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+
 //        txtTestString.setText("");
         String[] entries = txtTestString.getText().split("\n"); // the strings
 
@@ -1479,26 +1566,26 @@ public class LandingPage extends javax.swing.JFrame {
                 System.out.println("Current state: " + currentState[0]);
 
                 for (int j = 0; j < alphabetsToCheck.length; j++) { // loop each alphabet like 1 then 0 then 0 then 1 etc
-                    
+
                     final String currentAlphabet = alphabetsToCheck[j]; // eg 1
                     System.out.println("=================");
                     System.out.println("checking alphabet " + currentAlphabet);
 
                     final Boolean[] transitionFound = new Boolean[]{false};
-                    
-                    transitions.get(currentState[0]).forEach(item -> { // A = [aB, cC]
+
+                    transitionsGlobal.get(currentState[0]).forEach(item -> { // A = [aB, cC]
                         String itemWithoutSpace = item.replaceAll("\\s+", "");
                         System.out.println("        transition: " + itemWithoutSpace);
                         // move from current state
                         System.out.println("            Checking if [" + currentAlphabet + "] is part of  [" + itemWithoutSpace + "]");
                         if (itemWithoutSpace.contains(currentAlphabet)) { // eg alphabet a and transition is (aA or a) == this means it accepts this alphabet
-                            System.out.println("                [" + currentAlphabet + "] matches [" +itemWithoutSpace + "]");
+                            System.out.println("                [" + currentAlphabet + "] matches [" + itemWithoutSpace + "]");
                             transitionFound[0] = true;
                             if (itemWithoutSpace.length() == 2) {
                                 currentState[0] = item.replace(currentAlphabet, ""); // get the next state
                             }
                         } else {
-                            System.out.println("                [" + currentAlphabet + "] do not match [" +itemWithoutSpace + "]");
+                            System.out.println("                [" + currentAlphabet + "] do not match [" + itemWithoutSpace + "]");
                         }
                     });
 
@@ -1506,19 +1593,19 @@ public class LandingPage extends javax.swing.JFrame {
                         accepted = false;
                     }
 
-                    if (j == alphabetsToCheck.length - 1 && accepted && setOfFinalStates.contains(currentState[0])) { // if the current state accepts the alphabet, is the final state and the string is completed
+                    if (j == alphabetsToCheck.length - 1 && accepted && setOfFinalStatesGlobal.contains(currentState[0])) { // if the current state accepts the alphabet, is the final state and the string is completed
                         outcome.put(entries[i], "Accepted");
                     } else if (j == alphabetsToCheck.length - 1 && !accepted) {
                         outcome.put(entries[i], "Rejected");
-                    } else if (alphabetsToCheck.length == 1 && setOfFinalStates.contains(currentState[0])) {
+                    } else if (alphabetsToCheck.length == 1 && setOfFinalStatesGlobal.contains(currentState[0])) {
                         outcome.put(entries[i], "Accepted");
-                    } else if (alphabetsToCheck.length == 1 && !setOfFinalStates.contains(currentState[0])) {
+                    } else if (alphabetsToCheck.length == 1 && !setOfFinalStatesGlobal.contains(currentState[0])) {
                         outcome.put(entries[i], "Rejected");
                     }
-                    
+
                     System.out.println("=====================");
                 }
-                
+
                 System.out.println("            Current matches: " + outcome.toString()); // check current matches
 
             } else {
@@ -1571,7 +1658,11 @@ public class LandingPage extends javax.swing.JFrame {
 
     private void btnEpsilonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEpsilonActionPerformed
         String epsilon = btnEpsilon.getText();
-        setClipboardContent(epsilon);
+        try {
+            setClipboardContent(epsilon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnEpsilonActionPerformed
 
     private void setClipboardContent(String epsilon) throws HeadlessException {
@@ -1599,28 +1690,28 @@ public class LandingPage extends javax.swing.JFrame {
 
         String regularGrammar = inputRegularGrammar.getText();
 
-        initialState = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
+        initialStateGlobal = regularGrammar.substring(0, regularGrammar.indexOf("->")).replaceAll("\\s+", "");
 
-        transitions = createMapOfTransitions(regularGrammar);
+        transitionsGlobal = createMapOfTransitions(regularGrammar);
 
-        setOfStatesGlobal = getStates(regularGrammar);
+        setOfAllStatesGlobal = getStates(regularGrammar);
         setOfAlphabetsGlobal = getAlphabets(regularGrammar);
 
         // set final states
-        setOfFinalStates.clear(); // clear first before setting
-        transitions.forEach((key, values) -> {
+        setOfFinalStatesGlobal.clear(); // clear first before setting
+        transitionsGlobal.forEach((key, values) -> {
             logger.log(Level.INFO, "Values {0}", new String[]{values.toString()});
             values.forEach(value -> {
                 logger.log(Level.INFO, "Value {0}", new String[]{value});
                 if (setOfAlphabetsGlobal.contains(value)) {
                     logger.log(Level.INFO, "present {0}", new Boolean[]{setOfAlphabetsGlobal.contains(value)});
-                    setOfFinalStates.add(key);
+                    setOfFinalStatesGlobal.add(key);
                 }
             });
         });
 
         String[] header = getTransitionTableHeader();
-        String[][] tableData = getTransitionTableData(header, transitions);
+        String[][] tableData = getTransitionTableData(header, transitionsGlobal);
         addThetaToEmptyTransitionsInNFA(tableData);
 
         setDataToTransitionTable(tableData, header);
@@ -1629,7 +1720,7 @@ public class LandingPage extends javax.swing.JFrame {
 //        conversionDone = ConversionEnum.E_NFA;
 
         // set states
-        String statesToString = setOfStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        String statesToString = setOfAllStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
         txtStates.setText(statesToString);
 
         // set alphabets
@@ -1637,13 +1728,13 @@ public class LandingPage extends javax.swing.JFrame {
         txtAlphabets.setText(alphabetsToString);
 
         // TODO
-        System.out.println(btnTransitions.getText() + " : " + transitions.toString());
+        System.out.println(btnTransitions.getText() + " : " + transitionsGlobal.toString());
 
         // set initial state
-        txtInitialState.setText(initialState);
+        txtInitialState.setText(initialStateGlobal);
 
         // set finalStates
-        String finalStatesToString = setOfFinalStates.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
+        String finalStatesToString = setOfFinalStatesGlobal.toString().replaceAll("\\[", "{").replaceAll("\\]", "}");
         txtFinalStates.setText(finalStatesToString);
 
 
@@ -1718,13 +1809,12 @@ public class LandingPage extends javax.swing.JFrame {
     }//GEN-LAST:event_btnClearActionPerformed
 
     private void btnImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportActionPerformed
-             
-        
+
         StringBuilder content = new StringBuilder();
-        
+
         String filePath = txtFilePath.getText();
         File myObj = new File(filePath);
-        
+
         try (Scanner myReader = new Scanner(myObj)) {
             while (myReader.hasNextLine()) {
                 content.append(myReader.nextLine()).append("\n");
@@ -1735,12 +1825,11 @@ public class LandingPage extends javax.swing.JFrame {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "An error occurred reading data from {0} \n\n {1}", new String[]{filePath, e.getMessage()});
         }
-        
+
         if (content.length() == 0) {
             logger.log(Level.WARNING, "The file {0} seems empty", new String[]{filePath});
         }
-        
-        
+
         inputRegularGrammar.setText(content.toString());
     }//GEN-LAST:event_btnImportActionPerformed
 
@@ -1769,9 +1858,9 @@ public class LandingPage extends javax.swing.JFrame {
         });
 
         // 3. substitute N -> e
-        boolean doesInitialStateAcceptEpsilon = statesAcceptingEpsilon.contains(initialState);
+        boolean doesInitialStateAcceptEpsilon = statesAcceptingEpsilon.contains(initialStateGlobal);
         if (doesInitialStateAcceptEpsilon) {
-            statesAcceptingEpsilon.remove(initialState.replaceAll("\\s+", ""));
+            statesAcceptingEpsilon.remove(initialStateGlobal.replaceAll("\\s+", ""));
         }
 
         statesAcceptingEpsilon.forEach(state -> { // A -> epsilon
@@ -1792,14 +1881,14 @@ public class LandingPage extends javax.swing.JFrame {
 
         // change the initial state by introducing a state
 //        if (doesInitialStateAcceptEpsilon) {
-//            List<String> value = response.get(initialState.replaceAll("\\s+", "")).stream()
+//            List<String> value = response.get(initialStateGlobal.replaceAll("\\s+", "")).stream()
 //                    .collect(Collectors.toList()); // this makes sure you do not get reference but the values
 //            value.add(btnEpsilon.getText());
 //            response.put("X", value);
-//            initialState = "X";
-//            setOfStatesGlobal.add(initialState); // add the current state
+//            initialStateGlobal = "X";
+//            setOfStatesGlobal.add(initialStateGlobal); // add the current state
 //        }
-        transitions = response;
+        transitionsGlobal = response;
         return response;
     }
 
@@ -1944,6 +2033,45 @@ public class LandingPage extends javax.swing.JFrame {
             }
         }
         return cleanData;
+    }
+
+    private boolean areEquivalent(String firstItem, String secondItem, Map<String, List<String>> transitions, Set<String> currentDerivedSet) {
+
+        final List<String> transitionsForFirstItem = transitions.get(firstItem);
+        final List<String> transitionsForSecondItem = transitions.get(secondItem);
+        final List<String> allStates = new ArrayList<>();
+
+        System.out.println("\n Transition for first item[" + firstItem + "] >" + transitionsForFirstItem);
+        System.out.println("Transition for second item [" + secondItem + "] >" + transitionsForSecondItem);
+
+        System.out.println("Checking if " + transitionsForFirstItem.toString() + " match " + transitionsForSecondItem);
+        if (transitionsForFirstItem.stream().allMatch(transitionsForSecondItem::contains)) {// eg A -> oB, 1C and B ->0B,1C
+            System.out.println("             " + transitionsForFirstItem.toString() + " matches " + transitionsForSecondItem);
+            return true;
+        } else { // if like A -> 0B, 1C and B -> 0B, 1D
+
+            final Set<String> firstElementStates = transitionsForFirstItem.stream().map(item -> item.length() > 1 ? item.substring(1) : item).collect(Collectors.toSet());
+            final Set<String> secondElementStates = transitionsForSecondItem.stream().map(item -> item.length() < 2 ? item : item.substring(1)).collect(Collectors.toSet());
+
+            System.out.println("        > extracted states for [" + firstItem + "]" + firstElementStates.toString());
+            System.out.println("        > extracted states for [" + secondItem + "]" + secondElementStates.toString());
+
+            firstElementStates.forEach(state -> {
+                if (!allStates.contains(state)) {
+                    allStates.add(state);
+                }
+            });
+
+            secondElementStates.forEach(state -> {
+                if (!allStates.contains(state)) {
+                    allStates.add(state);
+                }
+            });
+
+            System.out.println("======States: " + allStates.toString());
+            System.out.println("======States: " + allStates.toString() + " are present in " + currentDerivedSet.toString());
+            return allStates.stream().allMatch(currentDerivedSet::contains);
+        }
     }
 
 }
